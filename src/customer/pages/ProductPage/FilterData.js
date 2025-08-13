@@ -2,6 +2,7 @@ export const filters = [
   {
     id: "color",
     name: "Color",
+    type: 'checkbox',
     options: [
       { value: "white", label: "White" },
       { value: "beige", label: "Beige" },
@@ -14,6 +15,7 @@ export const filters = [
   {
     id: "size",
     name: "Size",
+    type: 'checkbox',
     options: [
       { value: "xs", label: "XS" },
       { value: "s", label: "S" },
@@ -22,12 +24,10 @@ export const filters = [
       { value: "xl", label: "XL" },
     ],
   },
-];
-
-export const singleFilters = [
-  {
+   {
     id: "priceRange",
     name: "Price Range",
+    type: 'radio',
     options: [
         { value: '0-50', label: 'Under ₹50' },
         { value: '50-100', label: '₹50 - ₹100' },
@@ -38,7 +38,8 @@ export const singleFilters = [
   },
   {
     id: "discount",
-    name: "Discount",
+    name: "Discount Range",
+    type: 'radio',
     options: [
         { value: '10', label: '10% or more' },
         { value: '20', label: '20% or more' },
@@ -50,6 +51,7 @@ export const singleFilters = [
   {
     id: "availability",
     name: "Availability",
+    type: 'radio',
     options: [
         { value: 'in-stock', label: 'In Stock' },
         { value: 'out-of-stock', label: 'Out of Stock' },
