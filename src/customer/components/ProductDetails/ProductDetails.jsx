@@ -1,12 +1,13 @@
 import { Rating } from "@mui/material";
-
+import { mensKurta } from "../../../Data/mensKurta";
+import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
 const product = {
   name: "Casual Puff Sleeves Solid Women White Top",
   brand: "Universaloutfit",
   price: "₹199",
   originalPrice: "₹211",
   discountPercent: 5,
-  rating: 3.5,
+  rating: 4.2, // Added rating to product data
   href: "#",
   breadcrumbs: [
     { id: 1, name: "Men", href: "#" },
@@ -80,7 +81,7 @@ export default function ProductDetails() {
     <div className="bg-white">
       <div className="pt-6">
         <nav aria-label="Breadcrumb">
-          <ol className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+          <ol className="flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
             {product.breadcrumbs.map((breadcrumb) => (
               <li key={breadcrumb.id}>
                 <div className="flex items-center">
@@ -149,12 +150,11 @@ export default function ProductDetails() {
             {/* Product info */}
             <div className="mt-10 lg:mt-0">
               {/* Brand */}
-              <div className="flex text-lg font-medium text-gray-700 mb-2">
+              <div className="text-lg font-medium text-gray-700 mb-2">
                 {product.brand}
               </div>
 
-              {/* Product title */}
-              <h1 className="flex text-3xl font-bold text-gray-900 sm:text-2xl mb-4 leading-tight">
+              <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-4 leading-tight">
                 {product.name}
               </h1>
 
@@ -194,7 +194,7 @@ export default function ProductDetails() {
 
               {/* Size selection */}
               <div className="mb-8">
-                <h3 className="flex text-lg font-medium text-gray-900 mb-4">Size</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Size</h3>
                 <div className="flex gap-3 flex-wrap">
                   {product.sizes.map((size, index) => (
                     <button
@@ -245,6 +245,134 @@ export default function ProductDetails() {
             </div>
           </div>
         </div>
+
+        {/* Ratings & Reviews Section */}
+        <section className="bg-gray-50 mt-16 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">
+              Ratings & Reviews
+            </h2>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* LEFT SIDE: Scrollable Review Cards */}
+              <div className="lg:col-span-2">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 h-96 overflow-y-auto">
+                  <div className="space-y-4">
+                    {/* Sample review cards - you would map through reviews.list here */}
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((id) => (
+                      <div
+                        key={id}
+                        className="border-b border-gray-100 pb-4 last:border-b-0"
+                      >
+                        <div className="flex items-start space-x-4">
+                          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                            <span className="text-purple-600 font-semibold">
+                              U
+                            </span>
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h4 className="font-semibold text-gray-900">
+                                User {id}
+                              </h4>
+                              <Rating
+                                value={4.5}
+                                precision={0.5}
+                                readOnly
+                                size="small"
+                              />
+                            </div>
+                            <p className="text-gray-700 text-sm mb-2">
+                              Great product! Really satisfied with the quality
+                              and fit. The fabric feels premium and the design
+                              is exactly as shown.
+                            </p>
+                            <span className="text-xs text-gray-500">
+                              2 days ago
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT SIDE: Product Ratings */}
+              <div className="lg:col-span-1">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Product Ratings
+                  </h3>
+
+                  <div className="flex items-center space-x-3 mb-6">
+                    <Rating value={4.5} precision={0.5} readOnly />
+                    <span className="text-gray-600">42,807 Ratings</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      {
+                        label: "Excellent",
+                        value: 80,
+                        count: 19259,
+                        color: "bg-green-500",
+                      },
+                      {
+                        label: "Very Good",
+                        value: 70,
+                        count: 15420,
+                        color: "bg-green-400",
+                      },
+                      {
+                        label: "Good",
+                        value: 50,
+                        count: 5830,
+                        color: "bg-yellow-500",
+                      },
+                      {
+                        label: "Average",
+                        value: 30,
+                        count: 1850,
+                        color: "bg-orange-500",
+                      },
+                      {
+                        label: "Poor",
+                        value: 15,
+                        count: 448,
+                        color: "bg-red-500",
+                      },
+                    ].map((rating, idx) => (
+                      <div key={idx} className="flex items-center space-x-3">
+                        <div className="w-16 text-sm text-gray-700 font-medium">
+                          {rating.label}
+                        </div>
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`${rating.color} h-2 rounded-full transition-all duration-300`}
+                            style={{ width: `${rating.value}%` }}
+                          ></div>
+                        </div>
+                        <div className="w-12 text-sm text-gray-600 text-right">
+                          {rating.count.toLocaleString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* Similar Products */}
+        <section className="pt-10">
+          <h1 className="py-5 text-xl">Similar Products</h1>
+          <div className="flex flex-wrap space-y-5">
+            {mensKurta.map((item)=><HomeSectionCard product={item}/>)}
+          </div>
+        </section>
       </div>
     </div>
   );
