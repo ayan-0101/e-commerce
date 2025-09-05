@@ -1,12 +1,17 @@
 import React from "react";
 import CartItem from "./CartItem";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
+  const navigate = useNavigate()
+  const handleCheckout = () => {
+    navigate('/checkout')
+  }
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-6">
       {/* Left Side - Cart Items */}
       <div className="flex-1 flex flex-col gap-4">
-       {[1,1,1,1,1,1,1].map((item)=>(<CartItem />)) }
+        {[1, 1, 1, 1, 1, 1, 1].map((item) => (<CartItem />))}
         {/* Add more CartItems as needed */}
       </div>
 
@@ -36,7 +41,7 @@ const Cart = () => {
           <span>₹1278</span>
         </div>
 
-        <button className="w-full mt-5 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-md">
+        <button onClick={handleCheckout} className="w-full mt-5 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 rounded-md">
           CHECK OUT
         </button>
       </div>

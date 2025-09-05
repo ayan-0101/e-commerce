@@ -24,11 +24,17 @@ import {
 import { Avatar } from "@mui/material";
 
 import { navigation } from "./navigationData";
+import SearchBar from "./SearchBar";
+import { useNavigate } from "react-router-dom";
 
 export default function Navigation() {
   const [open, setOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+  const navigate = useNavigate()
 
+  const handleAddToCart=()=>{
+    navigate('/cart')
+  }
   return (
     <div className="bg-white z-50">
       {/* Mobile menu */}
@@ -173,8 +179,8 @@ export default function Navigation() {
             <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
               Get free delivery on orders over Inr 500
             </p>
-            <button 
-              onClick={()=> setShowBanner(false)}
+            <button
+              onClick={() => setShowBanner(false)}
               className="absolute right-2 top-2 text-white hover:text-gray-200"
             >
               <XMarkIcon className="h-5 w-5" />
@@ -199,13 +205,13 @@ export default function Navigation() {
               </button>
 
               {/* Logo */}
-              <div className="ml-4 flex lg:ml-0">
-                <a href="#">
-                  <span className="sr-only">Your Company</span>
+              <div className="ml-2 flex lg:ml-0">
+                <a href="/">
+                  <span className="sr-only">Low Key</span>
                   <img
                     alt=""
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                    className="h-8 w-auto"
+                    src="/assets/svgviewer-output.svg"
+                    className="h-20 w-auto"
                   />
                 </a>
               </div>
@@ -311,6 +317,11 @@ export default function Navigation() {
               </PopoverGroup>
 
               <div className="ml-auto flex items-center space-x-4">
+
+                {/* Search */}
+                <div className="flex lg:ml-6">
+                  <SearchBar/>
+                </div>
                 {/* Sign In and Create Account Links */}
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
                   <a
@@ -329,7 +340,6 @@ export default function Navigation() {
                 </div>
 
                 {/* Avatar */}
-
                 <Menu as="div" className="relative ml-3">
                   <div>
                     {/* Menu Button */}
@@ -351,9 +361,8 @@ export default function Navigation() {
                       {({ active }) => (
                         <a
                           href="#"
-                          className={`block px-4 py-2 text-sm ${
-                            active ? "bg-gray-100" : "text-gray-700"
-                          }`}
+                          className={`block px-4 py-2 text-sm ${active ? "bg-gray-100" : "text-gray-700"
+                            }`}
                         >
                           Your Profile
                         </a>
@@ -363,9 +372,8 @@ export default function Navigation() {
                       {({ active }) => (
                         <a
                           href="#"
-                          className={`block px-4 py-2 text-sm ${
-                            active ? "bg-gray-100" : "text-gray-700"
-                          }`}
+                          className={`block px-4 py-2 text-sm ${active ? "bg-gray-100" : "text-gray-700"
+                            }`}
                         >
                           Settings
                         </a>
@@ -375,9 +383,8 @@ export default function Navigation() {
                       {({ active }) => (
                         <a
                           href="#"
-                          className={`block px-4 py-2 text-sm ${
-                            active ? "bg-gray-100" : "text-gray-700"
-                          }`}
+                          className={`block px-4 py-2 text-sm ${active ? "bg-gray-100" : "text-gray-700"
+                            }`}
                         >
                           Sign out
                         </a>
@@ -386,20 +393,8 @@ export default function Navigation() {
                   </Menu.Items>
                 </Menu>
 
-                {/* Search */}
-                <div className="flex lg:ml-6">
-                  <a href="#" className="p-2 text-gray-400 hover:text-gray-500">
-                    <span className="sr-only">Search</span>
-                    <MagnifyingGlassIcon
-                      aria-hidden="true"
-                      className="h-6 w-6"
-                    />
-                  </a>
-                </div>
-
                 {/* Cart */}
-                <div className="flow-root">
-                  <a href="#" className="group -m-2 flex items-center p-2">
+                <div className="group -m-2 flex items-center p-2" onClick={handleAddToCart}>
                     <ShoppingBagIcon
                       aria-hidden="true"
                       className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -408,7 +403,6 @@ export default function Navigation() {
                       2
                     </span>
                     <span className="sr-only">items in cart, view bag</span>
-                  </a>
                 </div>
               </div>
             </div>

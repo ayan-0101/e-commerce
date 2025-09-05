@@ -17,7 +17,7 @@ export default function Checkout() {
 
   // Get step from query param (default = 0)
   const querySearch = new URLSearchParams(location.search);
-  const stepFromQuery = parseInt(querySearch.get('step')) || 1;
+  const stepFromQuery = parseInt(querySearch.get('step')) || 2;
 
   const [activeStep, setActiveStep] = React.useState(stepFromQuery);
 

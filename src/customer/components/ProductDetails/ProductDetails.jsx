@@ -1,6 +1,7 @@
 import { Rating } from "@mui/material";
 import { mensKurta } from "../../../Data/mensKurta";
 import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
+import { useNavigate } from "react-router-dom";
 const product = {
   name: "Casual Puff Sleeves Solid Women White Top",
   brand: "Universaloutfit",
@@ -77,6 +78,10 @@ function classNames(...classes) {
 }
 
 export default function ProductDetails() {
+  const navigate = useNavigate()
+  const handleAddToCart=()=>{
+    navigate('/cart')
+  }
   return (
     <div className="bg-white">
       <div className="pt-6">
@@ -214,7 +219,7 @@ export default function ProductDetails() {
               </div>
 
               {/* Add to cart button */}
-              <button className="bg-purple-600 text-white py-4 px-12 rounded-lg text-lg font-semibold hover:bg-purple-700 transition-colors duration-200 mb-10">
+              <button onClick={handleAddToCart} className="bg-purple-600 text-white py-4 px-12 rounded-lg text-lg font-semibold hover:bg-purple-700 transition-colors duration-200 mb-10">
                 ADD TO CART
               </button>
 
@@ -369,7 +374,7 @@ export default function ProductDetails() {
         {/* Similar Products */}
         <section className="pt-10">
           <h1 className="py-5 text-xl">Similar Products</h1>
-          <div className="flex flex-wrap space-y-5">
+          <div className="flex flex-wrap space-y-5 justify-center">
             {mensKurta.map((item)=><HomeSectionCard product={item}/>)}
           </div>
         </section>
