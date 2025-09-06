@@ -2,9 +2,9 @@ import React from "react";
 import { map } from "lodash";
 import AliceCarousel from "react-alice-carousel";
 import "react-alice-carousel/lib/alice-carousel.css";
-import { homeCarouseldata } from "./HomeCarouselData";
+import { mainCarouselData } from "../../ComponentData/mainCarouselData";
 
-const items = map(homeCarouseldata, (items) => (
+const items = map(mainCarouselData, (items) => (
   <img
     className="cursor-pointer h-1/5 w-full"
     role="presentation"
