@@ -15,26 +15,21 @@ import {
   Menu,
 } from "@headlessui/react";
 
-import {
-  Bars3Icon,
-  MagnifyingGlassIcon,
-  ShoppingBagIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
 import { Avatar } from "@mui/material";
-
-import { navigation } from "./navigationData";
+import { navigation } from "../../ComponentData/navigationData";
 import SearchBar from "./SearchBar";
 import { useNavigate } from "react-router-dom";
+import { ICONS } from "../../../constants/icon";
 
 export default function Navigation() {
   const [open, setOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const handleAddToCart=()=>{
-    navigate('/cart')
-  }
+  const handleAddToCart = () => {
+    navigate("/cart");
+  };
+
   return (
     <div className="bg-white z-50">
       {/* Mobile menu */}
@@ -49,7 +44,7 @@ export default function Navigation() {
             transition
             className="relative flex w-full max-w-xs transform flex-col overflow-y-auto bg-white pb-12 shadow-xl transition duration-300 ease-in-out data-[closed]:-translate-x-full"
           >
-            <div className="flex px-4 pb-2 pt-5">
+            <div className="flex px-4 pb-1 pt-2">
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -57,18 +52,18 @@ export default function Navigation() {
               >
                 <span className="absolute -inset-0.5" />
                 <span className="sr-only">Close menu</span>
-                <XMarkIcon aria-hidden="true" className="h-6 w-6" />
+                <ICONS.close aria-hidden="true" className="h-6 w-6" />
               </button>
             </div>
 
             {/* Links */}
-            <TabGroup className="mt-2">
+            <TabGroup className="">
               <div className="border-b border-gray-200">
                 <TabList className="-mb-px flex space-x-8 px-4">
                   {navigation.categories.map((category) => (
                     <Tab
                       key={category.name}
-                      className="flex-1 whitespace-nowrap border-b-2 border-transparent px-1 py-4 text-base font-medium text-gray-900 data-[selected]:border-indigo-600 data-[selected]:text-indigo-600"
+                      className="flex-1 whitespace-nowrap border-b-2 border-transparent px-1 pb-4 text-base font-medium text-gray-900 data-[selected]:border-indigo-600 data-[selected]:text-indigo-600"
                     >
                       {category.name}
                     </Tab>
@@ -173,6 +168,7 @@ export default function Navigation() {
         </div>
       </Dialog>
 
+      {/* HEADER */}
       <header className="relative bg-white">
         {showBanner && (
           <div className="relative bg-indigo-600">
@@ -183,7 +179,7 @@ export default function Navigation() {
               onClick={() => setShowBanner(false)}
               className="absolute right-2 top-2 text-white hover:text-gray-200"
             >
-              <XMarkIcon className="h-5 w-5" />
+              <ICONS.close className="h-5 w-5" />
             </button>
           </div>
         )}
@@ -201,20 +197,22 @@ export default function Navigation() {
               >
                 <span className="absolute -inset-0.5" />
                 <span className="sr-only">Open menu</span>
-                <Bars3Icon aria-hidden="true" className="h-6 w-6" />
+                <ICONS.menu aria-hidden="true" className="h-6 w-6" />
               </button>
 
               {/* Logo */}
               <div className="ml-2 flex lg:ml-0">
                 <a href="/">
-                  <span className="sr-only">Low Key</span>
+                  <span className="sr-only">Lowkey</span>
                   <img
-                    alt=""
-                    src="/assets/svgviewer-output.svg"
-                    className="h-20 w-auto"
+                    alt="Lowkey Logo"
+                    src="/assets/logo.jpg"
+                    className="h-[50px] w-[60px] sm:h-[60px] sm:w-[80px] lg:h-[72px] lg:w-[74px] object-contain"
                   />
+
                 </a>
               </div>
+
 
               {/* Flyout menus */}
               <PopoverGroup className="hidden lg:ml-8 lg:block lg:self-stretch z-50">
@@ -231,7 +229,6 @@ export default function Navigation() {
                         transition
                         className="absolute inset-x-0 top-full text-sm text-gray-500 transition data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
                       >
-                        {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
                         <div
                           aria-hidden="true"
                           className="absolute inset-0 top-1/2 bg-white shadow"
@@ -317,11 +314,11 @@ export default function Navigation() {
               </PopoverGroup>
 
               <div className="ml-auto flex items-center space-x-4">
-
                 {/* Search */}
                 <div className="flex lg:ml-6">
-                  <SearchBar/>
+                  <SearchBar />
                 </div>
+
                 {/* Sign In and Create Account Links */}
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
                   <a
@@ -342,7 +339,6 @@ export default function Navigation() {
                 {/* Avatar */}
                 <Menu as="div" className="relative ml-3">
                   <div>
-                    {/* Menu Button */}
                     <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="absolute -inset-1.5" />
                       <span className="sr-only">Open user menu</span>
@@ -394,15 +390,18 @@ export default function Navigation() {
                 </Menu>
 
                 {/* Cart */}
-                <div className="group -m-2 flex items-center p-2" onClick={handleAddToCart}>
-                    <ShoppingBagIcon
-                      aria-hidden="true"
-                      className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                    />
-                    <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      2
-                    </span>
-                    <span className="sr-only">items in cart, view bag</span>
+                <div
+                  className="group -m-2 flex items-center p-2"
+                  onClick={handleAddToCart}
+                >
+                  <ICONS.shoppingBag
+                    aria-hidden="true"
+                    className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                  />
+                  <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+                    2
+                  </span>
+                  <span className="sr-only">items in cart, view bag</span>
                 </div>
               </div>
             </div>
