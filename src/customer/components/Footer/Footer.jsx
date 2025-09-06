@@ -1,119 +1,79 @@
-import { Button, Grid, Typography } from "@mui/material";
+import { Grid, Typography, Link } from "@mui/material";
 import React from "react";
-import { Link } from "react-alice-carousel";
 
 const Footer = () => {
   return (
-    <div>
-      <Grid
-        className="bg-black text-white text-center mt-10"
-        container
-        sx={{ bgcolor: "black", color: "white", py: 3 }}
-      >
-        <Grid item xs={12} sm={4} md={3}>
-          {" "}
-          <Typography className="pb-5" variant="h6">
-            {" "}
-            Company{" "}
-          </Typography>
-          <div>
-            <Button className="pb-5" variant="h6">
-              About
-            </Button>
-          </div>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Blog
-            </Button>
-          </div>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Partners
-            </Button>
-          </div>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Jobs
-            </Button>
-          </div>
-        </Grid>
-        <Grid item xs={12} sm={4} md={3}>
-          <Typography className="pb-5" variant="h6">
-            {" "}
-            Solutions{" "}
-          </Typography>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Marketing
-            </Button>
-          </div>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Analytics
-            </Button>
-          </div>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Insights
-            </Button>
-          </div>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Suport
-            </Button>
-          </div>
-        </Grid>
-        <Grid item xs={12} sm={4} md={3}>
-          <Typography className="pb-5" variant="h6">
-            {" "}
-            Documentations{" "}
-          </Typography>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Guide
-            </Button>
-          </div>
-          <div>
-            <Button className="pb-5" variant="h6">
-              API Status
-            </Button>
-          </div>
-        </Grid>
-        <Grid item xs={12} sm={4} md={3}>
-          <Typography className="pb-5" variant="h6">
-            {" "}
-            Legal{" "}
-          </Typography>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Claim
-            </Button>
-          </div>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Privacy
-            </Button>
-          </div>
-          <div>
-            <Button className="pb-5" variant="h6">
-              Terms
-            </Button>
-          </div>
-        </Grid>
-
-        <Grid className="pt-20" item xs={12}>
-          <Typography variant="body2" component="p" align="center">
-            &copy; 2024 Fashion Hub. All Rights Reserved.
-          </Typography>
-          <Typography variant="body2" component="p" align="center">
-            Made by Beyond 9 to 5 co.
-          </Typography>
-          <Typography variant="body2" component="p" align="center">
-           Icons made by Freepic from <Link href="https://www.flaticon.com/authors/freepik" target="_blank">https://www.flaticon.com/authors/freepik</Link>
-          </Typography>
-        </Grid>
+    <Grid
+      container
+      spacing={4}
+      sx={{
+        bgcolor: "black",
+        color: "white",
+        px: { xs: 2, sm: 6, md: 12 },
+        py: 6,
+        textAlign: { xs: "center", sm: "left" },
+      }}
+    >
+      {/* Company */}
+      <Grid item xs={12} sm={6} md={3}>
+        <Typography variant="h6" gutterBottom>
+          Company
+        </Typography>
+        <Link href="#" color="inherit" underline="hover" display="block">
+          About
+        </Link>
+        <Link href="#" color="inherit" underline="hover" display="block">
+          Blog
+        </Link>
       </Grid>
-    </div>
+
+      {/* Solutions */}
+      <Grid item xs={12} sm={6} md={3}>
+        <Typography variant="h6" gutterBottom>
+          Solutions
+        </Typography>
+        {["Marketing", "Analytics", "Insights", "Support"].map((item) => (
+          <Link key={item} href="#" color="inherit" underline="hover" display="block">
+            {item}
+          </Link>
+        ))}
+      </Grid>
+
+      {/* Documentation */}
+      <Grid item xs={12} sm={6} md={3}>
+        <Typography variant="h6" gutterBottom>
+          Documentation
+        </Typography>
+        <Link href="#" color="inherit" underline="hover" display="block">
+          Guide
+        </Link>
+        <Link href="#" color="inherit" underline="hover" display="block">
+          API Status
+        </Link>
+      </Grid>
+
+      {/* Legal */}
+      <Grid item xs={12} sm={6} md={3}>
+        <Typography variant="h6" gutterBottom>
+          Legal
+        </Typography>
+        {["Claim", "Privacy", "Terms"].map((item) => (
+          <Link key={item} href="#" color="inherit" underline="hover" display="block">
+            {item}
+          </Link>
+        ))}
+      </Grid>
+
+      {/* Bottom text */}
+      <Grid item xs={12} sx={{ mt: 4 }}>
+        <Typography variant="body2" align="center" color="gray">
+          &copy; {new Date().getFullYear()} Lowkey. All Rights Reserved.
+        </Typography>
+        <Typography variant="body2" align="center" color="gray">
+          Made by WeBelieve Co.
+        </Typography>
+      </Grid>
+    </Grid>
   );
 };
 
