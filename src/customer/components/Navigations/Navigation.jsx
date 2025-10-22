@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -15,19 +15,50 @@ import {
   Menu,
 } from "@headlessui/react";
 
-import { Avatar } from "@mui/material";
+import { Avatar, Button } from "@mui/material";
 import { navigation } from "../../ComponentData/navigationData";
 import SearchBar from "./SearchBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ICONS } from "../../../constants/icon";
+import AuthModal from "../../auth/AuthModal";
 
 export default function Navigation() {
   const [open, setOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Initialize modalForm based on current URL
+  const [modalForm, setModalForm] = useState(() => {
+    if (location.pathname === "/register") return "register";
+    return "login";  // Default to login for both /login and other paths
+  });
+
+  // Effect to handle direct navigation and URL changes
+  useEffect(() => {
+    if (location.pathname === "/login") {
+      setModalForm("login");
+      setModalOpen(true);
+    } else if (location.pathname === "/register") {
+      setModalForm("register");
+      setModalOpen(true);
+    }
+  }, [location.pathname]);
 
   const handleAddToCart = () => {
     navigate("/cart");
+  };
+
+  const handleOpenModal = (form = "login") => {
+    setModalForm(form);
+    setModalOpen(true);
+    navigate(form === "login" ? "/login" : "/register");
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    navigate("/");  // Remove login/register from URL when modal closes
   };
 
   return (
@@ -148,20 +179,10 @@ export default function Navigation() {
 
             <div className="space-y-6 border-t border-gray-200 px-4 py-6">
               <div className="flow-root">
-                <a
-                  href="#"
-                  className="-m-2 block p-2 font-medium text-gray-900"
-                >
-                  Sign in
-                </a>
+                <Button onClick={handleOpenModal}>Sign In</Button>
               </div>
               <div className="flow-root">
-                <a
-                  href="#"
-                  className="-m-2 block p-2 font-medium text-gray-900"
-                >
-                  Create account
-                </a>
+                <Button>Create Account</Button>
               </div>
             </div>
           </DialogPanel>
@@ -209,10 +230,8 @@ export default function Navigation() {
                     src="/assets/logo.jpg"
                     className="h-[50px] w-[60px] sm:h-[60px] sm:w-[80px] lg:h-[72px] lg:w-[74px] object-contain"
                   />
-
                 </a>
               </div>
-
 
               {/* Flyout menus */}
               <PopoverGroup className="hidden lg:ml-8 lg:block lg:self-stretch z-50">
@@ -321,19 +340,15 @@ export default function Navigation() {
 
                 {/* Sign In and Create Account Links */}
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  <a
-                    href="#"
-                    className="text-sm font-medium text-gray-700 hover:text-gray-800"
-                  >
-                    Sign in
-                  </a>
+                  <div className="flow-root">
+                    <Button onClick={() => handleOpenModal("login")}>Sign In</Button>
+                  </div>
+
                   <span aria-hidden="true" className="h-6 w-px bg-gray-200" />
-                  <a
-                    href="#"
-                    className="text-sm font-medium text-gray-700 hover:text-gray-800"
-                  >
-                    Create account
-                  </a>
+
+                  <div className="flow-root">
+                    <Button onClick={() => handleOpenModal("register")}>Create Account</Button>
+                  </div>
                 </div>
 
                 {/* Avatar */}
@@ -357,8 +372,9 @@ export default function Navigation() {
                       {({ active }) => (
                         <a
                           href="#"
-                          className={`block px-4 py-2 text-sm ${active ? "bg-gray-100" : "text-gray-700"
-                            }`}
+                          className={`block px-4 py-2 text-sm ${
+                            active ? "bg-gray-100" : "text-gray-700"
+                          }`}
                         >
                           Your Profile
                         </a>
@@ -368,8 +384,9 @@ export default function Navigation() {
                       {({ active }) => (
                         <a
                           href="#"
-                          className={`block px-4 py-2 text-sm ${active ? "bg-gray-100" : "text-gray-700"
-                            }`}
+                          className={`block px-4 py-2 text-sm ${
+                            active ? "bg-gray-100" : "text-gray-700"
+                          }`}
                         >
                           Settings
                         </a>
@@ -379,8 +396,9 @@ export default function Navigation() {
                       {({ active }) => (
                         <a
                           href="#"
-                          className={`block px-4 py-2 text-sm ${active ? "bg-gray-100" : "text-gray-700"
-                            }`}
+                          className={`block px-4 py-2 text-sm ${
+                            active ? "bg-gray-100" : "text-gray-700"
+                          }`}
                         >
                           Sign out
                         </a>
@@ -408,6 +426,15 @@ export default function Navigation() {
           </div>
         </nav>
       </header>
+      <AuthModal
+        handleClose={handleCloseModal}
+        open={modalOpen}
+        form={modalForm}
+        onSwitch={(next) => {
+          setModalForm(next);
+          navigate(next === "login" ? "/login" : "/register");
+        }}
+      />
     </div>
   );
 }
