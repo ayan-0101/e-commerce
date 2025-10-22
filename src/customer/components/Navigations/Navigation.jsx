@@ -28,11 +28,11 @@ export default function Navigation() {
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Initialize modalForm based on current URL
   const [modalForm, setModalForm] = useState(() => {
     if (location.pathname === "/register") return "register";
-    return "login";  // Default to login for both /login and other paths
+    return "login"; // Default to login for both /login and other paths
   });
 
   // Effect to handle direct navigation and URL changes
@@ -58,7 +58,7 @@ export default function Navigation() {
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    navigate("/");  // Remove login/register from URL when modal closes
+    navigate("/"); // Remove login/register from URL when modal closes
   };
 
   return (
@@ -341,13 +341,17 @@ export default function Navigation() {
                 {/* Sign In and Create Account Links */}
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
                   <div className="flow-root">
-                    <Button onClick={() => handleOpenModal("login")}>Sign In</Button>
+                    <Button onClick={() => handleOpenModal("login")}>
+                      Sign In
+                    </Button>
                   </div>
 
                   <span aria-hidden="true" className="h-6 w-px bg-gray-200" />
 
                   <div className="flow-root">
-                    <Button onClick={() => handleOpenModal("register")}>Create Account</Button>
+                    <Button onClick={() => handleOpenModal("register")}>
+                      Create Account
+                    </Button>
                   </div>
                 </div>
 
