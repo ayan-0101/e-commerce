@@ -1,11 +1,16 @@
 import { Button } from "@headlessui/react";
 import { TextField, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUser, registerUser } from "../../State/Auth/Actions";
 
 const RegisterForm = ({ onSwitch }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  const { auth } = useSelector((state) => state);
+  const token = localStorage.getItem("token");
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -17,18 +22,7 @@ const RegisterForm = ({ onSwitch }) => {
       password: formData.get("password"),
     };
 
-    console.log("Form submitted:", data);
-
-    // Show success toast
-    toast.success("Account created successfully!", {
-      duration: 3000,
-      position: "top-center",
-      style: {
-        background: "#10b981",
-        color: "#fff",
-        fontWeight: "500",
-      },
-    });
+    dispatch(registerUser(data));
 
     // Clear the form
     e.target.reset();
@@ -50,6 +44,38 @@ const RegisterForm = ({ onSwitch }) => {
       },
     },
   };
+    // ✅ Show toast messages based on API response:
+   useEffect(() => {
+  if (auth.error) {
+    toast.error(auth.error, {
+      duration: 3000,
+      position: "top-center",
+    });
+  } 
+  else if (auth.user && auth.user.jwt) {
+    toast.success("Account created successfully! Please login.", {
+      duration: 2500,
+      position: "top-center",
+      style: {
+        background: "#10b981",
+        color: "#fff",
+        fontWeight: "500",
+      },
+    });
+
+    // ✅ Open login modal / switch route after short delay
+    setTimeout(() => {
+      onSwitch && onSwitch();   // 👉 Switches to Login Page/Modal
+    }, 800); // Small delay so user sees toast
+  }
+}, [auth.error, auth.user]);
+
+    // ✅ Fetch user if token exists
+    useEffect(() => {
+      if (token) {
+        dispatch(fetchUser());
+      }
+    }, [token, dispatch]);
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -158,7 +184,9 @@ const RegisterForm = ({ onSwitch }) => {
             <div className="w-full border-t border-gray-200"></div>
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-white px-4 text-sm text-gray-500">Already have an account?</span>
+            <span className="bg-white px-4 text-sm text-gray-500">
+              Already have an account?
+            </span>
           </div>
         </div>
 
