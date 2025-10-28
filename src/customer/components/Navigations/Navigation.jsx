@@ -1,443 +1,189 @@
-import { Fragment, useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  Popover,
-  PopoverButton,
-  PopoverGroup,
-  PopoverPanel,
-  Tab,
-  TabGroup,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Menu,
-} from "@headlessui/react";
-
-import { Avatar, Button } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Button } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { ICONS } from "../../../constants/icon";
 import { navigation } from "../../ComponentData/navigationData";
 import SearchBar from "./SearchBar";
-import { useNavigate, useLocation } from "react-router-dom";
-import { ICONS } from "../../../constants/icon";
 import AuthModal from "../../auth/AuthModal";
+import MobileMenu from "./MobileMenu";
+import UserMenu from "./UserMenu";
+import DesktopCategories from "./DesktopCategories";
+import { logoutUser } from "../../../State/Auth/Actions";
 
 export default function Navigation() {
-  const [open, setOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalForm, setAuthModalForm] = useState("login");
+
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
+  const { auth } = useSelector((state) => state);
 
-  // Initialize modalForm based on current URL
-  const [modalForm, setModalForm] = useState(() => {
-    if (location.pathname === "/register") return "register";
-    return "login"; // Default to login for both /login and other paths
-  });
-
-  // Effect to handle direct navigation and URL changes
+  // Handle URL-based modal opening
   useEffect(() => {
-    if (location.pathname === "/login") {
-      setModalForm("login");
-      setModalOpen(true);
-    } else if (location.pathname === "/register") {
-      setModalForm("register");
-      setModalOpen(true);
+    const path = location.pathname;
+    if (path === "/login") {
+      setAuthModalForm("login");
+      setAuthModalOpen(true);
+    } else if (path === "/register") {
+      setAuthModalForm("register");
+      setAuthModalOpen(true);
     }
   }, [location.pathname]);
 
-  const handleAddToCart = () => {
-    navigate("/cart");
-  };
-
-  const handleOpenModal = (form = "login") => {
-    setModalForm(form);
-    setModalOpen(true);
+  const handleOpenAuthModal = (form = "login") => {
+    setAuthModalForm(form);
+    setAuthModalOpen(true);
     navigate(form === "login" ? "/login" : "/register");
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    navigate("/"); // Remove login/register from URL when modal closes
+  const handleCloseAuthModal = () => {
+    setAuthModalOpen(false);
+    navigate("/");
+  };
+
+  const handleAuthModalSwitch = (nextForm) => {
+    setAuthModalForm(nextForm);
+    navigate(nextForm === "login" ? "/login" : "/register");
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/");
+  };
+
+  const handleCartClick = () => {
+    navigate("/cart");
   };
 
   return (
     <div className="bg-white z-50">
-      {/* Mobile menu */}
-      <Dialog open={open} onClose={setOpen} className="relative z-50 lg:hidden">
-        <DialogBackdrop
-          transition
-          className="fixed inset-0 bg-black bg-opacity-25 transition-opacity duration-300 ease-linear data-[closed]:opacity-0"
-        />
+      {/* Mobile Menu */}
+      <MobileMenu
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        navigation={navigation}
+        onOpenAuthModal={handleOpenAuthModal}
+      />
 
-        <div className="fixed inset-0 z-40 flex">
-          <DialogPanel
-            transition
-            className="relative flex w-full max-w-xs transform flex-col overflow-y-auto bg-white pb-12 shadow-xl transition duration-300 ease-in-out data-[closed]:-translate-x-full"
-          >
-            <div className="flex px-4 pb-1 pt-2">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
-              >
-                <span className="absolute -inset-0.5" />
-                <span className="sr-only">Close menu</span>
-                <ICONS.close aria-hidden="true" className="h-6 w-6" />
-              </button>
-            </div>
-
-            {/* Links */}
-            <TabGroup className="">
-              <div className="border-b border-gray-200">
-                <TabList className="-mb-px flex space-x-8 px-4">
-                  {navigation.categories.map((category) => (
-                    <Tab
-                      key={category.name}
-                      className="flex-1 whitespace-nowrap border-b-2 border-transparent px-1 pb-4 text-base font-medium text-gray-900 data-[selected]:border-indigo-600 data-[selected]:text-indigo-600"
-                    >
-                      {category.name}
-                    </Tab>
-                  ))}
-                </TabList>
-              </div>
-              <TabPanels as={Fragment}>
-                {navigation.categories.map((category) => (
-                  <TabPanel
-                    key={category.name}
-                    className="space-y-10 px-4 pb-8 pt-10"
-                  >
-                    <div className="grid grid-cols-2 gap-x-4">
-                      {category.featured.map((item) => (
-                        <div key={item.name} className="group relative text-sm">
-                          <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
-                            <img
-                              alt={item.imageAlt}
-                              src={item.imageSrc}
-                              className="object-cover object-center"
-                            />
-                          </div>
-                          <a
-                            href={item.href}
-                            className="mt-6 block font-medium text-gray-900"
-                          >
-                            <span
-                              aria-hidden="true"
-                              className="absolute inset-0 z-10"
-                            />
-                            {item.name}
-                          </a>
-                          <p aria-hidden="true" className="mt-1">
-                            Shop now
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                    {category.sections.map((section) => (
-                      <div key={section.name}>
-                        <p
-                          id={`${category.id}-${section.id}-heading-mobile`}
-                          className="font-medium text-gray-900"
-                        >
-                          {section.name}
-                        </p>
-                        <ul
-                          role="list"
-                          aria-labelledby={`${category.id}-${section.id}-heading-mobile`}
-                          className="mt-6 flex flex-col space-y-6"
-                        >
-                          {section.items.map((item) => (
-                            <li key={item.name} className="flow-root">
-                              <a
-                                href={item.href}
-                                className="-m-2 block p-2 text-gray-500"
-                              >
-                                {item.name}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </TabPanel>
-                ))}
-              </TabPanels>
-            </TabGroup>
-
-            <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-              {navigation.pages.map((page) => (
-                <div key={page.name} className="flow-root">
-                  <a
-                    href={page.href}
-                    className="-m-2 block p-2 font-medium text-gray-900"
-                  >
-                    {page.name}
-                  </a>
-                </div>
-              ))}
-            </div>
-
-            <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-              <div className="flow-root">
-                <Button onClick={handleOpenModal}>Sign In</Button>
-              </div>
-              <div className="flow-root">
-                <Button>Create Account</Button>
-              </div>
-            </div>
-          </DialogPanel>
-        </div>
-      </Dialog>
-
-      {/* HEADER */}
+      {/* Header */}
       <header className="relative bg-white">
+        {/* Banner */}
         {showBanner && (
           <div className="relative bg-indigo-600">
-            <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
-              Get free delivery on orders over Inr 500
+            <p className="flex h-10 items-center justify-center px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
+              Get free delivery on orders over INR 500
             </p>
             <button
               onClick={() => setShowBanner(false)}
-              className="absolute right-2 top-2 text-white hover:text-gray-200"
+              className="absolute right-2 top-2 text-white hover:text-gray-200 transition-colors"
+              aria-label="Close banner"
             >
               <ICONS.close className="h-5 w-5" />
             </button>
           </div>
         )}
 
+        {/* Main Navigation */}
         <nav
           aria-label="Top"
           className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
         >
           <div className="border-b border-gray-200">
             <div className="flex h-16 items-center">
+              {/* Mobile Menu Button */}
               <button
                 type="button"
-                onClick={() => setOpen(true)}
-                className="relative rounded-md bg-white p-2 text-gray-400 lg:hidden"
+                onClick={() => setMobileMenuOpen(true)}
+                className="relative rounded-md bg-white p-2 text-gray-400 hover:text-gray-500 lg:hidden transition-colors"
+                aria-label="Open menu"
               >
-                <span className="absolute -inset-0.5" />
-                <span className="sr-only">Open menu</span>
                 <ICONS.menu aria-hidden="true" className="h-6 w-6" />
               </button>
 
               {/* Logo */}
               <div className="ml-2 flex lg:ml-0">
-                <a href="/">
+                <button onClick={() => navigate("/")} className="focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded">
                   <span className="sr-only">Lowkey</span>
                   <img
                     alt="Lowkey Logo"
                     src="/assets/logo.jpg"
                     className="h-[50px] w-[60px] sm:h-[60px] sm:w-[80px] lg:h-[72px] lg:w-[74px] object-contain"
                   />
-                </a>
+                </button>
               </div>
 
-              {/* Flyout menus */}
-              <PopoverGroup className="hidden lg:ml-8 lg:block lg:self-stretch z-50">
-                <div className="flex h-full space-x-8">
-                  {navigation.categories.map((category) => (
-                    <Popover key={category.name} className="flex">
-                      <div className="relative flex">
-                        <PopoverButton className="relative z-10 -mb-px flex items-center border-b-2 border-transparent pt-px text-sm font-medium text-gray-700 transition-colors duration-200 ease-out hover:text-gray-800 data-[open]:border-indigo-600 data-[open]:text-indigo-600">
-                          {category.name}
-                        </PopoverButton>
-                      </div>
+              {/* Desktop Categories */}
+              <DesktopCategories navigation={navigation} />
 
-                      <PopoverPanel
-                        transition
-                        className="absolute inset-x-0 top-full text-sm text-gray-500 transition data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
-                      >
-                        <div
-                          aria-hidden="true"
-                          className="absolute inset-0 top-1/2 bg-white shadow"
-                        />
-
-                        <div className="relative bg-white">
-                          <div className="mx-auto max-w-7xl px-8">
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-10 py-16">
-                              <div className="col-start-2 grid grid-cols-2 gap-x-8">
-                                {category.featured.map((item) => (
-                                  <div
-                                    key={item.name}
-                                    className="group relative text-base sm:text-sm"
-                                  >
-                                    <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
-                                      <img
-                                        alt={item.imageAlt}
-                                        src={item.imageSrc}
-                                        className="object-cover object-center"
-                                      />
-                                    </div>
-                                    <a
-                                      href={item.href}
-                                      className="mt-6 block font-medium text-gray-900"
-                                    >
-                                      <span
-                                        aria-hidden="true"
-                                        className="absolute inset-0 z-10"
-                                      />
-                                      {item.name}
-                                    </a>
-                                    <p aria-hidden="true" className="mt-1">
-                                      Shop now
-                                    </p>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="row-start-1 grid grid-cols-3 gap-x-8 gap-y-10 text-sm">
-                                {category.sections.map((section) => (
-                                  <div key={section.name}>
-                                    <p
-                                      id={`${section.name}-heading`}
-                                      className="font-medium text-gray-900 mr-32"
-                                    >
-                                      {section.name}
-                                    </p>
-                                    <ul
-                                      role="list"
-                                      aria-labelledby={`${section.name}-heading`}
-                                      className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
-                                    >
-                                      {section.items.map((item) => (
-                                        <li key={item.name} className="flex">
-                                          <a
-                                            href={item.href}
-                                            className="hover:text-gray-800"
-                                          >
-                                            {item.name}
-                                          </a>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </PopoverPanel>
-                    </Popover>
-                  ))}
-
-                  {navigation.pages.map((page) => (
-                    <a
-                      key={page.name}
-                      href={page.href}
-                      className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
-                    >
-                      {page.name}
-                    </a>
-                  ))}
-                </div>
-              </PopoverGroup>
-
+              {/* Right Side Actions */}
               <div className="ml-auto flex items-center space-x-4">
                 {/* Search */}
                 <div className="flex lg:ml-6">
                   <SearchBar />
                 </div>
 
-                {/* Sign In and Create Account Links */}
-                <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  <div className="flow-root">
-                    <Button onClick={() => handleOpenModal("login")}>
+                {/* Desktop Auth Buttons (when not logged in) */}
+                {!auth.user && (
+                  <div className="hidden lg:flex lg:items-center lg:space-x-4">
+                    <Button
+                      variant="text"
+                      onClick={() => handleOpenAuthModal("login")}
+                      sx={{ textTransform: "none" }}
+                    >
                       Sign In
                     </Button>
-                  </div>
 
-                  <span aria-hidden="true" className="h-6 w-px bg-gray-200" />
+                    <span
+                      aria-hidden="true"
+                      className="h-6 w-px bg-gray-200"
+                    />
 
-                  <div className="flow-root">
-                    <Button onClick={() => handleOpenModal("register")}>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleOpenAuthModal("register")}
+                      sx={{ textTransform: "none" }}
+                    >
                       Create Account
                     </Button>
                   </div>
-                </div>
+                )}
 
-                {/* Avatar */}
-                <Menu as="div" className="relative ml-3">
-                  <div>
-                    <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">Open user menu</span>
-                      <Avatar sx={{ bgcolor: "indigo", color: "white" }}>
-                        A
-                      </Avatar>
-                    </Menu.Button>
-                  </div>
-
-                  {/* Menu Items */}
-                  <Menu.Items
-                    transition
-                    className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                  >
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={`block px-4 py-2 text-sm ${
-                            active ? "bg-gray-100" : "text-gray-700"
-                          }`}
-                        >
-                          Your Profile
-                        </a>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={`block px-4 py-2 text-sm ${
-                            active ? "bg-gray-100" : "text-gray-700"
-                          }`}
-                        >
-                          Settings
-                        </a>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={`block px-4 py-2 text-sm ${
-                            active ? "bg-gray-100" : "text-gray-700"
-                          }`}
-                        >
-                          Sign out
-                        </a>
-                      )}
-                    </Menu.Item>
-                  </Menu.Items>
-                </Menu>
+                {/* User Menu (when logged in) */}
+                {auth.user && (
+                  <UserMenu user={auth.user} onLogout={handleLogout} />
+                )}
 
                 {/* Cart */}
-                <div
-                  className="group -m-2 flex items-center p-2"
-                  onClick={handleAddToCart}
+                <button
+                  onClick={handleCartClick}
+                  className="group -m-2 flex items-center p-2 hover:opacity-75 transition-opacity"
+                  aria-label="View cart"
                 >
                   <ICONS.shoppingBag
                     aria-hidden="true"
-                    className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                    className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500 transition-colors"
                   />
                   <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                    2
+                    {auth.cart?.totalItem || 0}
                   </span>
-                  <span className="sr-only">items in cart, view bag</span>
-                </div>
+                  <span className="sr-only">items in cart</span>
+                </button>
               </div>
             </div>
           </div>
         </nav>
       </header>
+
+      {/* Auth Modal */}
       <AuthModal
-        handleClose={handleCloseModal}
-        open={modalOpen}
-        form={modalForm}
-        onSwitch={(next) => {
-          setModalForm(next);
-          navigate(next === "login" ? "/login" : "/register");
-        }}
+        handleClose={handleCloseAuthModal}
+        open={authModalOpen}
+        form={authModalForm}
+        onSwitch={handleAuthModalSwitch}
       />
     </div>
   );

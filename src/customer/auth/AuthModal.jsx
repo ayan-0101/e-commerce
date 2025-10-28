@@ -82,9 +82,9 @@ const AuthModal = ({ handleClose, open, form = "login", onSwitch }) => {
 
           {/* Form Content */}
           {form === "login" ? (
-            <LoginForm onSwitch={() => onSwitch && onSwitch("register")} />
+            <LoginForm onSwitch={() => onSwitch && onSwitch("register")} handleClose={handleClose} />
           ) : (
-            <RegisterForm onSwitch={() => onSwitch && onSwitch("login")} />
+            <RegisterForm onSwitch={() => onSwitch && onSwitch("login")} handleClose={handleClose}/>
           )}
         </Box>
       </Slide>

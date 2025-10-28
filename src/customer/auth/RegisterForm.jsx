@@ -1,19 +1,24 @@
 import { Button } from "@headlessui/react";
 import { TextField, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, registerUser } from "../../State/Auth/Actions";
+import { useNavigate } from "react-router-dom";
 
-const RegisterForm = ({ onSwitch }) => {
+const RegisterForm = ({ onSwitch, handleClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { auth } = useSelector((state) => state);
   const token = localStorage.getItem("token");
+  const hasShownToast = useRef(false);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    hasShownToast.current = false; // Reset toast flag on new submission
+    
     const formData = new FormData(e.target);
     const data = {
       firstName: formData.get("firstName"),
@@ -44,38 +49,62 @@ const RegisterForm = ({ onSwitch }) => {
       },
     },
   };
-    // ✅ Show toast messages based on API response:
-   useEffect(() => {
-  if (auth.error) {
-    toast.error(auth.error, {
-      duration: 3000,
-      position: "top-center",
-    });
-  } 
-  else if (auth.user && auth.user.jwt) {
-    toast.success("Account created successfully! Please login.", {
-      duration: 2500,
-      position: "top-center",
-      style: {
-        background: "#10b981",
-        color: "#fff",
-        fontWeight: "500",
-      },
-    });
 
-    // ✅ Open login modal / switch route after short delay
-    setTimeout(() => {
-      onSwitch && onSwitch();   // 👉 Switches to Login Page/Modal
-    }, 800); // Small delay so user sees toast
-  }
-}, [auth.error, auth.user]);
+  // ✅ Show toast messages based on API response
+  useEffect(() => {
+    if (hasShownToast.current) return; // Prevent duplicate toasts
 
-    // ✅ Fetch user if token exists
-    useEffect(() => {
-      if (token) {
-        dispatch(fetchUser());
+    if (auth.error) {
+      hasShownToast.current = true;
+      
+      // Normalize error messages
+      let errorMessage = auth.error;
+      if (errorMessage.toLowerCase().includes("already exists") || 
+          errorMessage.toLowerCase().includes("already registered")) {
+        errorMessage = "This email is already registered";
+      } else if (errorMessage.toLowerCase().includes("email")) {
+        errorMessage = "Invalid email address";
+      } else if (errorMessage.toLowerCase().includes("password")) {
+        errorMessage = "Password must be at least 8 characters";
       }
-    }, [token, dispatch]);
+
+      toast.error(errorMessage, {
+        duration: 3000,
+        position: "top-center",
+        style: {
+          background: "#ef4444",
+          color: "#fff",
+          fontWeight: "500",
+        },
+      });
+    } else if (auth.user && auth.user.jwt) {
+      hasShownToast.current = true;
+      
+      toast.success("Account created successfully!", {
+        duration: 3000,
+        position: "top-center",
+        icon: "✅",
+        style: {
+          background: "#10b981",
+          color: "#fff",
+          fontWeight: "500",
+        },
+      });
+
+      // ✅ Close modal and redirect to home after short delay
+      setTimeout(() => {
+        handleClose();
+        navigate("/");
+      }, 1000);
+    }
+  }, [auth.error, auth.user, navigate, handleClose]);
+
+  // ✅ Fetch user if token exists
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchUser());
+    }
+  }, [token, dispatch]);
 
   return (
     <div className="w-full max-w-md mx-auto">
