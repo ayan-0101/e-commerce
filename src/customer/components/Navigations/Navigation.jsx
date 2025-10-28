@@ -9,7 +9,7 @@ import AuthModal from "../../auth/AuthModal";
 import MobileMenu from "./MobileMenu";
 import UserMenu from "./UserMenu";
 import DesktopCategories from "./DesktopCategories";
-import { logoutUser } from "../../../State/Auth/Actions";
+import { logoutUser, fetchUser } from "../../../State/Auth/Actions";
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,6 +22,14 @@ export default function Navigation() {
   const dispatch = useDispatch();
   const { auth } = useSelector((state) => state);
 
+  // ✅ Fetch user on component mount if token exists (maintain session)
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && !auth.user) {
+      dispatch(fetchUser());
+    }
+  }, [dispatch, auth.user]);
+
   // Handle URL-based modal opening
   useEffect(() => {
     const path = location.pathname;
@@ -33,6 +41,13 @@ export default function Navigation() {
       setAuthModalOpen(true);
     }
   }, [location.pathname]);
+
+  // Auto-close modal and redirect to home after successful registration
+  useEffect(() => {
+    if (auth.user && authModalOpen && authModalForm === "register") {
+      handleCloseAuthModal();
+    }
+  }, [auth.user]);
 
   const handleOpenAuthModal = (form = "login") => {
     setAuthModalForm(form);
