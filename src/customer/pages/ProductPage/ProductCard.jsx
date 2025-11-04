@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const ProductCard = ({product}) => {
   const navigate = useNavigate();
   return (
-    <div onClick={()=>navigate(`/product/${5}`)} className="productCard w-[15rem] m-3 transition-all cursor-pointer">
+  <div onClick={()=>navigate(`/product/${product._id}`)} className="productCard w-[15rem] m-3 transition-all cursor-pointer">
       <div className="h-[20rem]">
         <img
           className="h-full w-full object-cover object-left-top"
@@ -25,7 +25,7 @@ const ProductCard = ({product}) => {
           <span className="font-semibold text-lg">{product.discountedPrice}</span>
           <span className="line-through text-gray-500 text-base">{product.price}</span>
           <span className="text-green-600 font-semibold text-base whitespace-nowrap">
-            {product.discountPercent}% off
+            {product.discountPercentage}% off
           </span>
         </div>
       </div>
