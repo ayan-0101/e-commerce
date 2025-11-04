@@ -1,7 +1,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Button } from '@mui/material';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export default function FilterSection({ section, idPrefix = 'filter', wrapperClass = '' }) {
   const location = useLocation();

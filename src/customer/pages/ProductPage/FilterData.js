@@ -5,11 +5,13 @@ export const filters = [
     type: 'checkbox',
     options: [
       { value: "white", label: "White" },
-      { value: "beige", label: "Beige" },
+      { value: "red", label: "Red" },
+      { value: "yellow", label: "Yellow" },
       { value: "blue", label: "Blue" },
       { value: "brown", label: "Brown" },
       { value: "green", label: "Green" },
       { value: "purple", label: "Purple" },
+      { value: "pink", label: "Pink" },
     ],
   },
   {
