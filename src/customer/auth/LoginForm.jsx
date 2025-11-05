@@ -18,7 +18,7 @@ const LoginForm = ({ onSwitch, handleClose }) => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     hasShownToast.current = false; // Reset toast flag on new submission
-    
+
     const formData = new FormData(e.target);
     const data = {
       email: formData.get("email"),
@@ -54,12 +54,14 @@ const LoginForm = ({ onSwitch, handleClose }) => {
 
     if (auth.error) {
       hasShownToast.current = true;
-      
+
       // Normalize error messages
       let errorMessage = auth.error;
-      if (errorMessage.toLowerCase().includes("email") || 
-          errorMessage.toLowerCase().includes("user not found") ||
-          errorMessage.toLowerCase().includes("not found")) {
+      if (
+        errorMessage.toLowerCase().includes("email") ||
+        errorMessage.toLowerCase().includes("user not found") ||
+        errorMessage.toLowerCase().includes("not found")
+      ) {
         errorMessage = "Invalid email address";
       } else if (errorMessage.toLowerCase().includes("password")) {
         errorMessage = "Invalid password";
@@ -78,7 +80,7 @@ const LoginForm = ({ onSwitch, handleClose }) => {
       });
     } else if (auth.user && auth.jwt) {
       hasShownToast.current = true;
-      
+
       toast.success(
         <div>
           <strong>Welcome back!</strong>
@@ -135,12 +137,8 @@ const LoginForm = ({ onSwitch, handleClose }) => {
 
       {/* Header */}
       <div className="mb-6 text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
-          Welcome Back
-        </h2>
-        <p className="text-gray-600 text-sm">
-          Sign in to continue shopping
-        </p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+        <p className="text-gray-600 text-sm">Sign in to continue shopping</p>
       </div>
 
       <form onSubmit={handleFormSubmit} className="space-y-4">
@@ -197,9 +195,18 @@ const LoginForm = ({ onSwitch, handleClose }) => {
             <button
               type="button"
               className="text-xs text-purple-600 hover:text-purple-700 font-medium transition-colors"
-              onClick={() => toast.info("Password reset feature coming soon!", {
-                position: "top-center",
-              })}
+              onClick={() =>
+                toast("Password reset feature coming soon!", {
+                  position: "top-center",
+                  style: {
+                    background: "#3b82f6", // blue
+                    color: "#fff",
+                    fontWeight: 500,
+                    padding: "12px",
+                  },
+                  icon: "💬",
+                })
+              }
             >
               Forgot Password?
             </button>
