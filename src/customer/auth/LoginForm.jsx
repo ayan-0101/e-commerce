@@ -199,7 +199,7 @@ const LoginForm = ({ onSwitch, handleClose }) => {
                 toast("Password reset feature coming soon!", {
                   position: "top-center",
                   style: {
-                    background: "#3b82f6", // blue
+                    background: "#3b82f6",
                     color: "#fff",
                     fontWeight: 500,
                     padding: "12px",

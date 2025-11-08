@@ -30,7 +30,6 @@ export const registerUser = (userData) => async (dispatch) => {
         
         if (user?.jwt) {
             localStorage.setItem("token", user.jwt);
-            console.log(user, 'user')
             return dispatch(registerSuccess(user));
         } else {
             return dispatch(registerFailure("JWT token not received from server"));
@@ -53,7 +52,6 @@ export const loginUser = (credentials) => async (dispatch) => {
         const user = response?.data;
         if (user?.jwt) {
             localStorage.setItem("token", user.jwt);
-               console.log(user, 'user')
             return dispatch(loginSuccess(user));
         } else {
             return dispatch(loginFailure("JWT token not received from server"));
@@ -83,7 +81,6 @@ export const fetchUser = () => async (dispatch) => {
         });
 
         const user = response?.data;
-        console.log(user, 'user')
         return dispatch(getUserSuccess(user));
 
     } catch (err) {

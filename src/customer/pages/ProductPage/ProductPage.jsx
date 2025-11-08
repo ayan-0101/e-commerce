@@ -36,16 +36,25 @@ export default function ProductPage() {
       const values = sp.getAll(key);
       if (!values || values.length === 0) return [];
       return values.flatMap((v) =>
-        v ? v.split(",").map((s) => s.trim()).filter(Boolean) : []
+        v
+          ? v
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : []
       );
     };
 
     const priceRange = sp.get("priceRange") || null;
-    const [minPrice, maxPriceRaw] = priceRange ? priceRange.split("-") : [null, null];
+    const [minPrice, maxPriceRaw] = priceRange
+      ? priceRange.split("-")
+      : [null, null];
     const maxPrice = maxPriceRaw === "above" ? null : maxPriceRaw;
 
     const pageNumber = sp.get("page") ? Math.max(1, Number(sp.get("page"))) : 1;
-    const pageSize = sp.get("pageSize") ? Math.max(1, Number(sp.get("pageSize"))) : 10;
+    const pageSize = sp.get("pageSize")
+      ? Math.max(1, Number(sp.get("pageSize")))
+      : 10;
 
     return {
       raw: sp,
@@ -89,7 +98,8 @@ export default function ProductPage() {
     navigate(searchString ? `?${searchString}` : "", { replace: false });
   };
 
-  const listKeyForItem = (item) => item?._id || item?.id || JSON.stringify(item).slice(0, 12);
+  const listKeyForItem = (item) =>
+    item?._id || item?.id || JSON.stringify(item).slice(0, 12);
 
   const renderSkeletons = () => {
     return Array.from({ length: 8 }).map((_, i) => (
@@ -107,6 +117,10 @@ export default function ProductPage() {
       </div>
     ));
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [parsedSearch.pageNumber]);
 
   return (
     <div className="bg-white">
@@ -142,7 +156,11 @@ export default function ProductPage() {
 
               <div className="px-4 mt-4">
                 {/* FiltersPanel contains Sort + Filters + Reset */}
-                <FiltersPanel idPrefix="filter-mobile" compact onClose={() => setMobileFiltersOpen(false)} />
+                <FiltersPanel
+                  idPrefix="filter-mobile"
+                  compact
+                  onClose={() => setMobileFiltersOpen(false)}
+                />
               </div>
             </DialogPanel>
           </div>
@@ -182,7 +200,9 @@ export default function ProductPage() {
                     ) : (
                       <span>
                         Showing{" "}
-                        <strong className="text-gray-900">{products.length}</strong>{" "}
+                        <strong className="text-gray-900">
+                          {products.length}
+                        </strong>{" "}
                         results
                       </span>
                     )}
@@ -193,23 +213,35 @@ export default function ProductPage() {
                 <div className="flex flex-wrap justify-center bg-white py-5">
                   {error && (
                     <div className="col-span-full w-full text-center py-10">
-                      <p className="text-sm text-red-600">Error loading products.</p>
-                      <p className="text-xs text-gray-500 mt-2">{String(error)}</p>
+                      <p className="text-sm text-red-600">
+                        Error loading products.
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        {String(error)}
+                      </p>
                     </div>
                   )}
 
                   {loading && renderSkeletons()}
 
-                  {!loading && Array.isArray(products) && products.length === 0 && (
-                    <div className="col-span-full w-full text-center py-10">
-                      <p className="text-lg font-medium text-gray-700">No products found</p>
-                      <p className="text-sm text-gray-500 mt-1">Try clearing some filters or using a different search.</p>
-                    </div>
-                  )}
+                  {!loading &&
+                    Array.isArray(products) &&
+                    products.length === 0 && (
+                      <div className="col-span-full w-full text-center py-10">
+                        <p className="text-lg font-medium text-gray-700">
+                          No products found
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          Try clearing some filters or using a different search.
+                        </p>
+                      </div>
+                    )}
 
                   {!loading &&
                     Array.isArray(products) &&
-                    map(products, (item) => <ProductCard key={listKeyForItem(item)} product={item} />)}
+                    map(products, (item) => (
+                      <ProductCard key={listKeyForItem(item)} product={item} />
+                    ))}
                 </div>
               </div>
             </div>

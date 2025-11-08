@@ -44,8 +44,6 @@ export const findProductAllProduct = (reqData) => async (dispatch) => {
     const url = `/api/products${qs ? `?${qs}` : ""}`;
 
     const { data } = await api.get(url);
-    // keep a single informative log for debugging
-    console.log("products", data);
     dispatch({ type: FIND_ALL_PRODUCTS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({ type: FIND_ALL_PRODUCTS_FAILURE, payload: error.message });
@@ -56,7 +54,7 @@ export const findProductById = (reqData) => async (dispatch) => {
   const { id } = reqData;
   dispatch({ type: FIND_PRODUCT_BY_ID_REQUEST });
   try {
-    const { data } = await api.get(`/products/id/${id}`);
+    const { data } = await api.get(`/api/products/id/${id}`);
     dispatch({ type: FIND_PRODUCT_BY_ID_SUCCESS, payload: data });
   } catch (error) {
     dispatch({ type: FIND_PRODUCT_BY_ID_FAILURE, payload: error.message });

@@ -36,8 +36,6 @@ const DeliveryAddressForm = () => {
       phoneNumber: formData.phoneNumber,
     }
 
-    console.log("Submitted Address:", addressObject)
-
     return addressObject
   }
 
