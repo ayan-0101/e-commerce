@@ -7,8 +7,7 @@ const UserMenu = ({ user, onLogout }) => {
 
   const menuItems = [
     { label: "Your Profile", action: () => navigate("/profile") },
-    { label: "Orders", action: () => navigate("/orders") },
-    { label: "Settings", action: () => navigate("/settings") },
+    { label: "Orders", action: () => navigate("/order") },
     { label: "Sign out", action: onLogout, danger: true },
   ];
 

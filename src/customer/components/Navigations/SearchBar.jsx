@@ -52,7 +52,6 @@ export default function SearchBar() {
         
     event.stopPropagation()
         const data = event.target.value;
-        console.log(data);
     }
     return (
         <Search>

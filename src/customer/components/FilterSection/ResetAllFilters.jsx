@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { includes } from "lodash";
 
 export default function ResetAllFilters({ className = "" }) {
   const location = useLocation();
@@ -7,7 +8,8 @@ export default function ResetAllFilters({ className = "" }) {
 
   const hasActiveFilters = () => {
     try {
-      return Boolean(new URLSearchParams(location.search).toString());
+      const params = Boolean(new URLSearchParams(location.search).toString());
+      return (!includes(location.search, "page") && params) 
     } catch (e) {
       return location.search && location.search.length > 1;
     }
