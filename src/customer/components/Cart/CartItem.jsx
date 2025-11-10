@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateCartItem, removeItemFromCart } from "../../../State/Cart/Action";
 import { Trash2, Plus, Minus, Tag } from "lucide-react";
@@ -96,7 +96,7 @@ const CartItem = ({ cartItem }) => {
   };
 
   // Sync optimistic quantity when cart updates from Redux
-  React.useEffect(() => {
+  useEffect(() => {
     setOptimisticQuantity(cartItem?.quantity ?? 1);
   }, [cartItem?.quantity]);
 
