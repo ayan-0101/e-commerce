@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const fallbackImage =
@@ -50,7 +49,7 @@ const ProductCard = ({ product }) => {
       tabIndex={0}
       onKeyDown={onKeyDown}
       onClick={handleNavigate}
-      className="productCard w-56 md:w-64 m-3 bg-white rounded-2xl overflow-hidden shadow-sm transition transform hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
+      className="productCard p-3 w-72 md:w-80 m-3 bg-white rounded-2xl overflow-hidden shadow-sm transition transform hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
     >
       {/* Image */}
       <div className="relative h-64 md:h-72 bg-gray-100">

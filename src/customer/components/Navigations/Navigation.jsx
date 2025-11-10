@@ -168,13 +168,12 @@ export default function Navigation() {
               <div className="ml-2 flex lg:ml-0">
                 <button
                   onClick={() => navigate("/")}
-                  className="focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
                 >
                   <span className="sr-only">Lowkey</span>
                   <img
                     alt="Lowkey Logo"
                     src="/assets/logo.jpg"
-                    className="h-[50px] w-[60px] sm:h-[60px] sm:w-[80px] lg:h-[72px] lg:w-[74px] object-contain"
+                    className="h-[50px] w-[60px] sm:h-[60px] sm:w-[80px] lg:h-[66px] lg:w-[66px] object-contain"
                   />
                 </button>
               </div>

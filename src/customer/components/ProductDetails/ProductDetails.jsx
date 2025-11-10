@@ -3,11 +3,11 @@ import { Rating } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { findProductById } from "../../../State/Product/Action";
-import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
-import { mensKurta } from "../../../Data/mensKurta";
 import { addItemToCart } from "../../../State/Cart/Action";
 import { toast, Toaster } from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
+import SimilarProductsSection from "./SimilarProductsSection";
+import { get } from "lodash";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -21,6 +21,7 @@ export default function ProductDetails() {
   // The product slice might be { product: {...}, products: [...] } or product itself
   const productSlice = useSelector((s) => s.product || {});
   const productData = productSlice.product || productSlice || null;
+  const productCategory = get(productData, 'category.name', '');
   const loading = productSlice.isFetching ?? productSlice.loading ?? false;
   const error = productSlice.error ?? null;
 
@@ -424,7 +425,7 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        {/* Reviews & Similar products */}
+        {/* Reviews & Rating products */}
         <section className="mt-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-200 h-96 overflow-y-auto">
@@ -520,15 +521,7 @@ export default function ProductDetails() {
         </section>
 
         <section className="pt-10">
-          <h3 className="text-lg font-semibold mb-4">Similar products</h3>
-          <div className="flex flex-wrap gap-4 justify-center">
-            {mensKurta.map((item) => (
-              <HomeSectionCard
-                key={item.id || item._id || item.title}
-                product={item}
-              />
-            ))}
-          </div>
+          <SimilarProductsSection category={productCategory}/>
         </section>
       </div>
     </div>
