@@ -3,7 +3,7 @@ import { get, map } from "lodash";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { FunnelIcon, Squares2X2Icon } from "@heroicons/react/20/solid";
+import { FunnelIcon } from "@heroicons/react/20/solid";
 
 import ProductCard from "./ProductCard";
 import FiltersPanel from "../../components/FilterSection/FilterPanel";
@@ -54,7 +54,7 @@ export default function ProductPage() {
     const pageNumber = sp.get("page") ? Math.max(1, Number(sp.get("page"))) : 1;
     const pageSize = sp.get("pageSize")
       ? Math.max(1, Number(sp.get("pageSize")))
-      : 10;
+      : 9;
 
     return {
       raw: sp,
@@ -181,7 +181,7 @@ export default function ProductPage() {
             </div>
           </div>
 
-          <section aria-labelledby="products-heading" className="pb-24 pt-6">
+          <section aria-labelledby="products-heading" className="pb-6 pt-6">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5">
               {/* Filters (desktop) */}
               <div className="hidden lg:block">
