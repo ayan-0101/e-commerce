@@ -1,36 +1,52 @@
 import { api } from "../../ApiConfig/apiConfig";
-import { FIND_ALL_PRODUCTS_FAILURE, FIND_ALL_PRODUCTS_REQUEST, FIND_ALL_PRODUCTS_SUCCESS, FIND_PRODUCT_BY_ID_FAILURE, FIND_PRODUCT_BY_ID_REQUEST, FIND_PRODUCT_BY_ID_SUCCESS } from "./ActionType";
+import {
+  FIND_ALL_PRODUCTS_FAILURE,
+  FIND_ALL_PRODUCTS_REQUEST,
+  FIND_ALL_PRODUCTS_SUCCESS,
+  FIND_PRODUCT_BY_ID_FAILURE,
+  FIND_PRODUCT_BY_ID_REQUEST,
+  FIND_PRODUCT_BY_ID_SUCCESS,
+} from "./ActionType";
 
-export const findProductAllProduct = (reqData) => async (dispatch) => {
+/**
+ * Helper: convert value (string|array) into a query value that backend expects.
+ * We'll send arrays as comma-separated values (e.g. size=xs,s,m) which your service handles.
+ */
+const toQueryValue = (val) => {
+  if (val === undefined || val === null) return undefined;
+  if (Array.isArray(val)) return val.map((v) => String(v).trim()).filter(Boolean).join(",");
+  return String(val).trim();
+};
+
+export const findProductAllProduct = (reqData = {}) => async (dispatch) => {
   dispatch({ type: FIND_ALL_PRODUCTS_REQUEST });
-  const {
-    color,
-    sizes,
-    minPrice,
-    maxPrice,
-    minDiscount,
-    category,
-    sort,
-    stock,
-    pageNumber,
-    pageSize,
-  } = reqData;
+
   try {
-    // Build a safe query string (omit undefined/null/empty values)
+    const {
+      title,
+      color,
+      size,
+      minPrice,
+      maxPrice,
+      minDiscount,
+      category,
+      sort,
+      stock,
+      pageNumber,
+      pageSize,
+    } = reqData;
+
     const params = new URLSearchParams();
 
     const add = (key, val) => {
-      if (val === undefined || val === null || val === "") return;
-      if (Array.isArray(val)) {
-        // append multiple values for the same key
-        val.forEach((v) => params.append(key, v));
-      } else {
-        params.append(key, val);
-      }
+      const qv = toQueryValue(val);
+      if (!qv && qv !== 0) return;
+      params.append(key, qv);
     };
 
+    add("title", title);
     add("color", color);
-    add("sizes", sizes);
+    add("size", size);
     add("minPrice", minPrice);
     add("maxPrice", maxPrice);
     add("minDiscount", minDiscount);
@@ -44,19 +60,34 @@ export const findProductAllProduct = (reqData) => async (dispatch) => {
     const url = `/api/products${qs ? `?${qs}` : ""}`;
 
     const { data } = await api.get(url);
+
+    // payload shape: backend returns { content, currentPage, totalPages } or similar
     dispatch({ type: FIND_ALL_PRODUCTS_SUCCESS, payload: data });
+
+    // return data so caller can await and use it
+    return data;
   } catch (error) {
-    dispatch({ type: FIND_ALL_PRODUCTS_FAILURE, payload: error.message });
+    // Prefer useful server message if available
+    const payload = error?.response?.data ?? error?.message ?? String(error);
+    console.error("findProductAllProduct error:", payload);
+    dispatch({ type: FIND_ALL_PRODUCTS_FAILURE, payload });
+    // rethrow so callers know the request failed
+    throw error;
   }
 };
 
-export const findProductById = (reqData) => async (dispatch) => {
+export const findProductById = (reqData = {}) => async (dispatch) => {
   const { id } = reqData;
   dispatch({ type: FIND_PRODUCT_BY_ID_REQUEST });
   try {
+    // NOTE: adjust the path if your backend uses a different route (e.g. /api/products/:id)
     const { data } = await api.get(`/api/products/id/${id}`);
     dispatch({ type: FIND_PRODUCT_BY_ID_SUCCESS, payload: data });
+    return data;
   } catch (error) {
-    dispatch({ type: FIND_PRODUCT_BY_ID_FAILURE, payload: error.message });
+    const payload = error?.response?.data ?? error?.message ?? String(error);
+    console.error("findProductById error:", payload);
+    dispatch({ type: FIND_PRODUCT_BY_ID_FAILURE, payload });
+    throw error;
   }
 };

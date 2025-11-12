@@ -7,6 +7,7 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
+import { updateSearchParam } from "./urlUtil";
 
 export default function FilterSection({
   section,
@@ -36,43 +37,37 @@ export default function FilterSection({
 
   const handleFilter = useCallback(
     (value) => {
+      // read current params
       const sp = getSearchParams();
       const type = section.type;
 
       if (type === "checkbox") {
         const existing = sp.get(section.id);
-        const values =
-          existing && existing.length
-            ? existing.split(",").filter(Boolean)
-            : [];
-        const idx = values.indexOf(value);
-        if (idx >= 0) values.splice(idx, 1);
-        else values.push(value);
+        const values = existing && existing.length
+          ? existing.split(",").filter(Boolean)
+          : [];
 
-        if (values.length === 0) sp.delete(section.id);
-        else sp.set(section.id, values.join(","));
+        const idx = values.indexOf(value);
+        if (idx >= 0) values.splice(idx, 1); // remove if already present
+        else values.push(value); // add if not present
+
+        // if no values left -> remove param, otherwise set comma-joined
+        const newVal = values.length === 0 ? "" : values.join(",");
+        // use shared helper to update URL while preserving other params
+        updateSearchParam(navigate, location, section.id, newVal);
       } else if (type === "radio") {
         const current = sp.get(section.id);
-        if (current === value) sp.delete(section.id);
-        else sp.set(section.id, value);
+        const newVal = current === value ? "" : value;
+        updateSearchParam(navigate, location, section.id, newVal);
       }
-
-      // reset page to 1 when filters change
-      if (sp.has("page")) sp.delete("page");
-
-      const s = sp.toString();
-      navigate(s ? `?${s}` : "");
     },
-    [getSearchParams, navigate, section.type, section.id]
+    [getSearchParams, navigate, location, section.type, section.id]
   );
 
   const resetSectionFilter = useCallback(() => {
-    const sp = getSearchParams();
-    sp.delete(section.id);
-    if (sp.has("page")) sp.delete("page");
-    const s = sp.toString();
-    navigate(s ? `?${s}` : "");
-  }, [getSearchParams, navigate, section.id]);
+    // clear this filter but preserve others
+    updateSearchParam(navigate, location, section.id, "");
+  }, [navigate, location, section.id]);
 
   const hasSelectedOptions = useCallback(() => {
     const sp = getSearchParams();
