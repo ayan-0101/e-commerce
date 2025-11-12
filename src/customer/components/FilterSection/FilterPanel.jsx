@@ -3,8 +3,8 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
 import FilterSection from "./FilterSection";
-import ResetAllFilters from "./ResetAllFilters"; 
 import { filters, sortOptions } from "../../pages/ProductPage/FilterData";
+import { updateSearchParam } from "./urlUtil";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -16,7 +16,11 @@ function classNames(...classes) {
  * - Handles sorting by updating URL search params (same behavior as ProductPage previously)
  * - `compact` optionally hides some chrome for mobile, `onClose` can be used to close the mobile dialog
  */
-export default function FiltersPanel({ idPrefix = "filter-panel", compact = false, onClose }) {
+export default function FiltersPanel({
+  idPrefix = "filter-panel",
+  compact = false,
+  onClose,
+}) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -39,27 +43,24 @@ export default function FiltersPanel({ idPrefix = "filter-panel", compact = fals
   // toggles sort in URL (if same -> remove)
   const handleSort = useCallback(
     (sortValue) => {
-      const sp = new URLSearchParams(location.search || "");
+      const sp = new URLSearchParams(location.search);
       const current = sp.get("sort");
-      if (current === sortValue) sp.delete("sort");
-      else sp.set("sort", sortValue);
-
-      // when changing sort, reset to page 1
-      if (sp.has("page")) sp.delete("page");
-
-      const s = sp.toString();
-      navigate(s ? `?${s}` : "", { replace: false });
-
-      // optional: close mobile dialog if `onClose` provided
-      if (typeof onClose === "function") onClose();
+      const newSort = current === sortValue ? "" : sortValue;
+      updateSearchParam(navigate, location, "sort", newSort);
+      if (onClose) onClose();
     },
-    [location.search, navigate, onClose]
+    [location, navigate, onClose]
   );
 
   return (
     <div className="w-full">
       {/* Top row: sort + reset (compact toggle hides label spacing for mobile) */}
-      <div className={classNames("flex items-center justify-between px-4", compact ? "py-2" : "py-3")}>
+      <div
+        className={classNames(
+          "flex items-center justify-between px-4",
+          compact ? "py-2" : "py-3"
+        )}
+      >
         <div className="flex items-center gap-3">
           <Menu as="div" className="relative inline-block text-left">
             <div>
@@ -68,7 +69,10 @@ export default function FiltersPanel({ idPrefix = "filter-panel", compact = fals
                 aria-label="Sort products"
               >
                 <span className="mr-2 text-lg">{getCurrentSortLabel()}</span>
-                <ChevronDownIcon className="h-4 w-4 text-gray-500" aria-hidden="true" />
+                <ChevronDownIcon
+                  className="h-4 w-4 text-gray-500"
+                  aria-hidden="true"
+                />
               </MenuButton>
             </div>
 
@@ -80,12 +84,16 @@ export default function FiltersPanel({ idPrefix = "filter-panel", compact = fals
                       <button
                         onClick={() => handleSort(o.value)}
                         className={classNames(
-                          currentSort === o.value ? "font-semibold text-gray-900 bg-gray-100" : "text-gray-700",
+                          currentSort === o.value
+                            ? "font-semibold text-gray-900 bg-gray-100"
+                            : "text-gray-700",
                           "block w-full text-left px-4 py-2 text-sm"
                         )}
                       >
                         {o.name}
-                        {currentSort === o.value && <span className="ml-2 text-indigo-600">✓</span>}
+                        {currentSort === o.value && (
+                          <span className="ml-2 text-indigo-600">✓</span>
+                        )}
                       </button>
                     )}
                   </MenuItem>
@@ -106,10 +114,6 @@ export default function FiltersPanel({ idPrefix = "filter-panel", compact = fals
               </div>
             </MenuItems>
           </Menu>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <ResetAllFilters className="hidden sm:flex" />
         </div>
       </div>
 

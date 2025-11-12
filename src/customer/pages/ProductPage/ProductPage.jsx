@@ -68,6 +68,7 @@ export default function ProductPage() {
       sort: sp.get("sort") || null,
       pageNumber,
       pageSize,
+      title: sp.get("title") || null,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search, params.levelThree]);
@@ -75,6 +76,7 @@ export default function ProductPage() {
   // centralized fetch effect: maps parsedSearch into the API payload and dispatches
   useEffect(() => {
     const data = {
+      title: parsedSearch.title,
       category: parsedSearch.category,
       color: parsedSearch.color,
       sizes: parsedSearch.sizes,
