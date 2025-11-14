@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
-import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
+import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { COLORS } from "../../../constants/color";
+import ProductCard from "../../pages/ProductPage/ProductCard";
 
-const HomeSectionCarousel = ({ data = [], sectionName = "Men's Kurta" }) => {
+const HomeSectionCarousel = ({ data = [], sectionName = "Anime" }) => {
   const containerRef = useRef(null);
   const cardRefs = useRef([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -132,11 +132,11 @@ const HomeSectionCarousel = ({ data = [], sectionName = "Men's Kurta" }) => {
                 ref={(el) => (cardRefs.current[idx] = el)}
                 className={`
                   snap-center flex-shrink-0 
-                  w-[85%] sm:w-[200px] md:w-[230px] lg:w-[260px]
+                  w-[85%] sm:w-[200px] md:w-[230px] lg:w-[320px]
                   flex justify-center
                 `}
               >
-                <HomeSectionCard product={item} />
+                <ProductCard product={item} />
               </div>
             ))}
           </div>
