@@ -14,7 +14,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { useNavigate, useLocation, Routes, Route } from "react-router-dom";
 import { ICONS } from "../media/Icons/iconBank";
-import Dashboard from "./Components/Dashboard";
+import Dashboard from "./Components/Dashboard/Dashboard";
 import Products from "./Components/Products";
 import AddProduct from "./Components/AddProduct";
 import Orders from "./Components/Orders";
