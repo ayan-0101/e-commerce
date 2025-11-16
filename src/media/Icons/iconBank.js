@@ -4,6 +4,8 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import GroupIcon from "@mui/icons-material/Group";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import SettingsIcon from "@mui/icons-material/Settings";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
 export const ICONS = {
   dashboard: DashboardIcon,
@@ -12,4 +14,6 @@ export const ICONS = {
   customers: GroupIcon,
   addProduct: AddBoxIcon,
   settings: SettingsIcon,
+  trendingUp: TrendingUpIcon,
+  revenue: AttachMoneyIcon,
 };
