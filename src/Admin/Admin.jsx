@@ -15,10 +15,10 @@ import ListItemText from "@mui/material/ListItemText";
 import { useNavigate, useLocation, Routes, Route } from "react-router-dom";
 import { ICONS } from "../media/Icons/iconBank";
 import Dashboard from "./Components/Dashboard/Dashboard";
-import Products from "./Components/Products";
 import AddProduct from "./Components/AddProduct";
 import Orders from "./Components/Orders";
 import Customers from "./Components/Customers";
+import ProductsTable from "./Components/ProductsTable";
 
 const drawerWidth = 250;
 
@@ -61,7 +61,7 @@ const SidebarList = ({ onNavigate, currentPath }) => {
                 py: 1.5,
                 "&.Mui-selected": {
                   backgroundColor: "#f3f4f6",
-                  borderRight: "3px solid #6C63FF",
+                  borderRight: "3px solid #3b0663",
                   "&:hover": {
                     backgroundColor: "#e5e7eb",
                   },
@@ -70,16 +70,16 @@ const SidebarList = ({ onNavigate, currentPath }) => {
             >
               <ListItemIcon>
                 {IconComponent ? (
-                  <IconComponent style={{ color: active ? "#6C63FF" : "#555" }} />
+                  <IconComponent style={{ color: active ? "#3b0663" : "#e5e7eb" }} />
                 ) : (
-                  <MenuIcon style={{ color: active ? "#6C63FF" : "#555" }} />
+                  <MenuIcon style={{ color: active ? "#3b0663" : "#e5e7eb" }} />
                 )}
               </ListItemIcon>
               <ListItemText 
                 primary={item.name}
                 primaryTypographyProps={{
                   fontWeight: active ? 600 : 400,
-                  color: active ? "#6C63FF" : "#374151",
+                  color: active ? "#3b0663" : "#e5e7eb",
                 }}
               />
             </ListItemButton>
@@ -101,7 +101,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-purple-950">
       {/* AppBar for mobile / small screens */}
       <AppBar
         position="fixed"
@@ -144,6 +144,7 @@ const Admin = () => {
       >
         {/* Desktop: fixed, always open */}
         <Box
+        className="bg-purple-950"
           sx={{
             display: { xs: "none", lg: "block" },
             width: drawerWidth,
@@ -152,7 +153,7 @@ const Admin = () => {
             left: 0,
             top: 0,
             borderRight: "1px solid #e5e7eb",
-            bgcolor: "#fff",
+            bgcolor: "#3b0663",
             overflowY: "auto",
             overflowX: "hidden",
           }}
@@ -163,7 +164,7 @@ const Admin = () => {
               variant="h5"
               sx={{
                 fontWeight: 700,
-                color: "#6C63FF",
+                color: "#e5e7eb",
                 textAlign: "center",
               }}
             >
@@ -205,7 +206,7 @@ const Admin = () => {
                 variant="h5"
                 sx={{
                   fontWeight: 700,
-                  color: "#6C63FF",
+                  color: "#e5e7eb",
                   textAlign: "center",
                 }}
               >
@@ -240,7 +241,7 @@ const Admin = () => {
       >
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/products" element={<Products />} />
+          <Route path="/products" element={<ProductsTable />} />
           <Route path="/products/create" element={<AddProduct />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/customers" element={<Customers />} />
