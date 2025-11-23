@@ -6,6 +6,9 @@ import {
   GET_ORDER_BY_ID_FAILURE,
   GET_ORDER_BY_ID_REQUEST,
   GET_ORDER_BY_ID_SUCCESS,
+  GET_ORDER_HISTORY_FAILURE,
+  GET_ORDER_HISTORY_REQUEST,
+  GET_ORDER_HISTORY_SUCCESS,
 } from "./ActionTypes";
 
 export const createOrder = (reqData) => async (dispatch) => {
@@ -70,6 +73,28 @@ export const getOrderById = (reqData) => async (dispatch) => {
       payload: errorMessage,
     });
 
+    throw error;
+  }
+};
+
+export const getOrderHistory = () => async (dispatch) => {
+  dispatch({ type: GET_ORDER_HISTORY_REQUEST });
+
+  try {
+    const { data } = await api.get("/api/orders/user");
+    const payload = data?.data ?? data;
+
+    dispatch({
+      type: GET_ORDER_HISTORY_SUCCESS,
+      payload,
+    });
+    return data;
+  } catch (error) {
+    const payload = error?.response?.data ?? error?.message ?? String(error);
+    dispatch({
+      type: GET_ORDER_HISTORY_FAILURE,
+      payload,
+    });
     throw error;
   }
 };

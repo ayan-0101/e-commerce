@@ -24,6 +24,7 @@ import {
 } from "../../State/Product/Action";
 import { get } from "lodash";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "../../customer/components/Navigations/SearchBar";
 
 /**
  * ProductsTable (styled)
@@ -142,7 +143,10 @@ const ProductsTable = () => {
 
   return (
     <>
-      <div className="" >
+      <div className="flex flex-col gap-4 justify-center items-center">
+        <span className="w-80 bg-white pr-2 pt-2 pb-2 ">
+          <SearchBar />
+        </span>
         <Paper
           className="bg-gradient-to-r from-purple-900 to-purple-950"
           sx={{ width: "100%", overflow: "hidden" }}
@@ -154,7 +158,7 @@ const ProductsTable = () => {
             </h2>
           </div>
 
-          <TableContainer sx={{ maxHeight: "calc(100vh - 180px)" }}>
+          <TableContainer sx={{ maxHeight: "calc(100vh - 230px)" }}>
             <Table
               stickyHeader
               aria-label="products table"
