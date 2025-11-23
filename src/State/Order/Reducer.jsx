@@ -1,6 +1,7 @@
 const initialState = {
   loading: false,
-  order: null,
+  order: null,  
+  orders: [],      
   error: null,
 };
 
@@ -8,6 +9,7 @@ export const orderReducer = (state = initialState, action) => {
   switch (action.type) {
     case "CREATE_ORDER_REQUEST":
     case "GET_ORDER_BY_ID_REQUEST":
+    case "GET_ORDER_HISTORY_REQUEST":
       return {
         ...state,
         loading: true,
@@ -21,8 +23,16 @@ export const orderReducer = (state = initialState, action) => {
         order: action.payload,
         error: null,
       };
+    case "GET_ORDER_HISTORY_SUCCESS":
+      return {
+        ...state,
+        loading: false,
+        orders: action.payload,
+        error: null,
+      };
     case "CREATE_ORDER_FAILURE":
     case "GET_ORDER_BY_ID_FAILURE":
+    case "GET_ORDER_HISTORY_FAILURE":
       return {
         ...state,
         loading: false,
