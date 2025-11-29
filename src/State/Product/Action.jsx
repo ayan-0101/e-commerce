@@ -149,7 +149,6 @@ export const createNewProduct =
     try {
       const { data } = await api.post(`/api/admin/products/`, reqData);
       dispatch({ type: CREATE_NEW_PRODUCT_SUCCESS, payload: data });
-      console.log("object", data);
       return data;
     } catch (error) {
       const payload = error?.response?.data ?? error?.message ?? String(error);

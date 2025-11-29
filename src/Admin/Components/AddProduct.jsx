@@ -10,7 +10,6 @@ const AddProduct = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const editProductData = get(location, "state.productData", null);
-  console.log("edit", editProductData);
 
   const [snackbar, setSnackbar] = useState({
     open: false,

@@ -18,7 +18,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import { api } from "../../../ApiConfig/apiConfig"; // adjust path to your api helper
+import { api } from "../../../ApiConfig/apiConfig";
 import AddressCard from "../AddressCard/AddressCard";
 import OrderTracking from "./OrderTracking";
 import OrderItemCard from "./OrderItemCard";
@@ -190,9 +190,6 @@ const OrderDetails = () => {
     // build query string safely
     const qs = new URLSearchParams({ step: "3", order_id: id }).toString();
     const url = `/checkout?${qs}`;
-
-    // debug log to confirm
-    console.log("Navigating to checkout:", { url, id });
 
     // navigate
     navigate(url, { state: { order } }); // also pass full order in location.state for convenience
