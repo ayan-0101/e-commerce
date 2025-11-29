@@ -23,7 +23,7 @@ const Order = () => {
   const dispatch = useDispatch();
   const orderState = useSelector((state) => state.order); 
   const { loading, orders = [], error } = orderState || {};
-  console.log('object', orders)
+  
   useEffect(() => {
     dispatch(getOrderHistory()); 
   }, [dispatch]);
@@ -78,7 +78,7 @@ const Order = () => {
     </Card>
   );
 
-  const filteredOrders = orders.filter((o) => {
+  const filteredOrders = orders.orders.filter((o) => {
     if (selectedFilters.length === 0) return true;
     const status = (o.orderStatus || o.status || "").toString().toLowerCase();
     return selectedFilters.some((f) => status.includes(f));

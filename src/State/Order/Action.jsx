@@ -3,6 +3,9 @@ import {
   CREATE_ORDER_FAILURE,
   CREATE_ORDER_REQUEST,
   CREATE_ORDER_SUCCESS,
+  GET_ALL_ORDERS_FAILURE,
+  GET_ALL_ORDERS_REQUEST,
+  GET_ALL_ORDERS_SUCCESS,
   GET_ORDER_BY_ID_FAILURE,
   GET_ORDER_BY_ID_REQUEST,
   GET_ORDER_BY_ID_SUCCESS,
@@ -93,6 +96,31 @@ export const getOrderHistory = () => async (dispatch) => {
     const payload = error?.response?.data ?? error?.message ?? String(error);
     dispatch({
       type: GET_ORDER_HISTORY_FAILURE,
+      payload,
+    });
+    throw error;
+  }
+};
+
+export const getAllOrders = () => async (dispatch) => {
+  dispatch({ type: GET_ALL_ORDERS_REQUEST });
+
+  try {
+    const { data } = await api.get("/api/admin/orders"); // 👈 check route: likely plural
+
+    // backend shape: { success, message, data: orders[] }
+    const payload = data?.data ?? data;
+
+    dispatch({
+      type: GET_ALL_ORDERS_SUCCESS,
+      payload,
+    });
+
+    return data;
+  } catch (error) {
+    const payload = error?.response?.data ?? error?.message ?? String(error);
+    dispatch({
+      type: GET_ALL_ORDERS_FAILURE,
       payload,
     });
     throw error;

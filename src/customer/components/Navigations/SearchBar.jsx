@@ -82,7 +82,6 @@ export default function SearchBar() {
   // Run search: update URL and dispatch
   const runSearch = useCallback(
     (q) => {
-      console.log("Searching:", q);
       updateSearchParam(navigate, location, "title", q?.trim() || "");
       dispatch(findProductAllProduct({ title: q?.trim() || "" }));
     },

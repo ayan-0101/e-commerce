@@ -16,9 +16,9 @@ import { useNavigate, useLocation, Routes, Route } from "react-router-dom";
 import { ICONS } from "../media/Icons/iconBank";
 import Dashboard from "./Components/Dashboard/Dashboard";
 import AddProduct from "./Components/AddProduct";
-import Orders from "./Components/Orders";
 import Customers from "./Components/Customers";
 import ProductsTable from "./Components/ProductsTable";
+import OrdersTable from "./Components/OrdersTable";
 
 const drawerWidth = 250;
 
@@ -243,7 +243,7 @@ const Admin = () => {
           <Route path="/" element={<Dashboard />} />
           <Route path="/products" element={<ProductsTable />} />
           <Route path="/products/create" element={<AddProduct />} />
-          <Route path="/orders" element={<Orders />} />
+          <Route path="/orders" element={<OrdersTable />} />
           <Route path="/customers" element={<Customers />} />
           {/* <Route path="/settings" element={<Settings />} /> */}
         </Routes>
