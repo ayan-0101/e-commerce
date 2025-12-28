@@ -11,6 +11,12 @@ import {
   GET_ORDER_HISTORY_REQUEST,
   GET_ORDER_HISTORY_SUCCESS,
   GET_ORDER_HISTORY_FAILURE,
+  UPDATE_ORDER_STATUS_REQUEST,
+  UPDATE_ORDER_STATUS_SUCCESS,
+  UPDATE_ORDER_STATUS_FAILURE,
+  DELETE_ORDER_REQUEST,
+  DELETE_ORDER_SUCCESS,
+  DELETE_ORDER_FAILURE,
 } from "./ActionTypes";
 
 const initialState = {
@@ -18,6 +24,8 @@ const initialState = {
   order: null,
   orders: [],
   error: null,
+  updating: false, // For status update loading
+  deleting: false, // For delete loading
 };
 
 export const orderReducer = (state = initialState, action) => {
@@ -30,6 +38,22 @@ export const orderReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
+        error: null,
+      };
+
+    // UPDATE REQUEST
+    case UPDATE_ORDER_STATUS_REQUEST:
+      return {
+        ...state,
+        updating: true,
+        error: null,
+      };
+
+    // DELETE REQUEST
+    case DELETE_ORDER_REQUEST:
+      return {
+        ...state,
+        deleting: true,
         error: null,
       };
 
@@ -61,6 +85,39 @@ export const orderReducer = (state = initialState, action) => {
         error: null,
       };
 
+    // UPDATE ORDER STATUS SUCCESS
+    case UPDATE_ORDER_STATUS_SUCCESS:
+      return {
+        ...state,
+        updating: false,
+        order: action.payload,
+        // Update the order in the orders array
+        orders: {
+          ...state.orders,
+          orders: state.orders.orders?.map((order) =>
+            order._id === action.payload._id ? action.payload : order
+          ),
+        },
+        error: null,
+      };
+
+    // DELETE ORDER SUCCESS
+    case DELETE_ORDER_SUCCESS:
+      return {
+        ...state,
+        deleting: false,
+        // Remove the deleted order from the orders array
+        orders: {
+          ...state.orders,
+          orders: state.orders.orders?.filter(
+            (order) => order._id !== action.payload
+          ),
+          totalElements: (state.orders.totalElements || 0) - 1,
+        },
+        error: null,
+      };
+
+    // FAILURES
     case CREATE_ORDER_FAILURE:
     case GET_ORDER_BY_ID_FAILURE:
     case GET_ORDER_HISTORY_FAILURE:
@@ -68,6 +125,20 @@ export const orderReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+        error: action.payload,
+      };
+
+    case UPDATE_ORDER_STATUS_FAILURE:
+      return {
+        ...state,
+        updating: false,
+        error: action.payload,
+      };
+
+    case DELETE_ORDER_FAILURE:
+      return {
+        ...state,
+        deleting: false,
         error: action.payload,
       };
 

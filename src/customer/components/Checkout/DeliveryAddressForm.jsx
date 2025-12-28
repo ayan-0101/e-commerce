@@ -6,7 +6,7 @@ import { createOrder } from "../../../State/Order/Action";
 import { useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 
-const DeliveryAddressForm = () => {
+const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,7 +19,7 @@ const DeliveryAddressForm = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { order } = useSelector((state) => state);
+  const { order, auth } = useSelector((state) => state);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -64,10 +64,28 @@ const DeliveryAddressForm = () => {
     };
 
     try {
-      dispatch(createOrder({ address: addressData, navigate }));
+      const resultAction = await dispatch(createOrder({ address: addressData, navigate }));
+      
+      // Extract order ID from the action result
+      // The structure might vary based on your Redux action implementation
+      let orderId = null;
+      
+      if (resultAction && resultAction.payload) {
+        orderId = resultAction.payload._id || resultAction.payload.orderId || resultAction.payload.id;
+      }
+      
       toast.success("Order created successfully!", {
         position: "top-center",
       });
+      
+      // Move to next step after successful order creation
+      setTimeout(() => {
+        if (onOrderCreated && orderId) {
+          onOrderCreated(orderId);
+        } else if (handleNext) {
+          handleNext();
+        }
+      }, 1000); // Small delay to show success message
     } catch (error) {
       toast.error("Failed to create order. Please try again.", {
         position: "top-center",
@@ -76,6 +94,42 @@ const DeliveryAddressForm = () => {
     }
   };
 
+  // Handle saved address delivery
+  const handleSavedAddressDeliver = async () => {
+    // Get saved address from Redux state (already accessed at component level)
+    const savedAddress = auth?.user?.addresses?.[0]; // Adjust based on your structure
+    
+    if (!savedAddress) {
+      toast.error("No saved address found. Please add a new address.", {
+        position: "top-center",
+      });
+      return;
+    }
+
+    try {
+      const resultAction = await dispatch(createOrder({ address: savedAddress, navigate }));
+      
+      let orderId = null;
+      if (resultAction && resultAction.payload) {
+        orderId = resultAction.payload._id || resultAction.payload.orderId || resultAction.payload.id;
+      }
+      
+      toast.success("Using saved address!");
+      
+      setTimeout(() => {
+        if (onOrderCreated && orderId) {
+          onOrderCreated(orderId);
+        } else if (handleNext) {
+          handleNext();
+        }
+      }, 1000);
+    } catch (error) {
+      toast.error("Failed to create order. Please try again.", {
+        position: "top-center",
+      });
+      console.error("Order creation error:", error);
+    }
+  };
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
@@ -94,6 +148,8 @@ const DeliveryAddressForm = () => {
               <Button
                 variant="contained"
                 fullWidth
+                onClick={handleSavedAddressDeliver}
+                disabled={order?.loading}
                 className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3"
                 sx={{
                   bgcolor: "#9c27b0",
@@ -102,7 +158,7 @@ const DeliveryAddressForm = () => {
                   fontSize: "16px",
                 }}
               >
-                DELIVER HERE
+                {order?.loading ? "CREATING ORDER..." : "DELIVER HERE"}
               </Button>
             </div>
           </div>

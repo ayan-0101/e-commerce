@@ -12,6 +12,12 @@ import {
   GET_ORDER_HISTORY_FAILURE,
   GET_ORDER_HISTORY_REQUEST,
   GET_ORDER_HISTORY_SUCCESS,
+  UPDATE_ORDER_STATUS_REQUEST,
+  UPDATE_ORDER_STATUS_SUCCESS,
+  UPDATE_ORDER_STATUS_FAILURE,
+  DELETE_ORDER_REQUEST,
+  DELETE_ORDER_SUCCESS,
+  DELETE_ORDER_FAILURE,
 } from "./ActionTypes";
 
 export const createOrder = (reqData) => async (dispatch) => {
@@ -123,6 +129,67 @@ export const getAllOrders = () => async (dispatch) => {
       type: GET_ALL_ORDERS_FAILURE,
       payload,
     });
+    throw error;
+  }
+};
+
+export const updateOrderStatus = (orderId, status) => async (dispatch) => {
+  dispatch({ type: UPDATE_ORDER_STATUS_REQUEST });
+
+  try {
+    const { data } = await api.put("/api/admin/orders/status", {
+      orderId,
+      status,
+    });
+
+    dispatch({
+      type: UPDATE_ORDER_STATUS_SUCCESS,
+      payload: data.data || data,
+    });
+
+    return data;
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to update order status";
+
+    dispatch({
+      type: UPDATE_ORDER_STATUS_FAILURE,
+      payload: errorMessage,
+    });
+
+    throw error;
+  }
+};
+
+/**
+ * Delete order (Admin)
+ * @param {String} orderId 
+ */
+export const deleteOrder = (orderId) => async (dispatch) => {
+  dispatch({ type: DELETE_ORDER_REQUEST });
+
+  try {
+    const { data } = await api.delete(`/api/admin/orders/${orderId}`);
+
+    dispatch({
+      type: DELETE_ORDER_SUCCESS,
+      payload: orderId, // Return the deleted order ID
+    });
+
+    return data;
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to delete order";
+
+    dispatch({
+      type: DELETE_ORDER_FAILURE,
+      payload: errorMessage,
+    });
+
     throw error;
   }
 };

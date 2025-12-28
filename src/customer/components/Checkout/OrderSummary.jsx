@@ -11,12 +11,13 @@ const formatPrice = (amount) =>
     ? "₹0"
     : `₹${Number(amount).toLocaleString()}`;
 
-const OrderSummary = () => {
+const OrderSummary = ({ orderId: propsOrderId }) => {
   const dispatch = useDispatch();
   const { order } = useSelector((state) => state);
+  console.log('object',order);
 
   const orderData = get(order, "order", {});
-  const orderId = get(orderData, "_id", "");
+  const orderId = propsOrderId || get(orderData, "_id", "");
   const orderItems = get(orderData, "orderItems", []);
   const shippingAddress = get(orderData, "shippingAddress", {});
   const paymentDetails = get(orderData, "paymentDetails", {});
@@ -38,9 +39,35 @@ const OrderSummary = () => {
 
   useEffect(() => {
     if (orderId) {
-      dispatch(getOrderById({ orderId }));
+      console.log("Fetching order with ID:", orderId);
+      dispatch(getOrderById(orderId));
     }
   }, [dispatch, orderId]);
+
+  // Show loading state
+  if (!orderId) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <p className="text-gray-600">No order ID available. Please create an order first.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (order?.loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <p className="text-gray-600">Loading order details...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-8">
@@ -81,11 +108,15 @@ const OrderSummary = () => {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Ordered Items
               </h2>
-              <div className="space-y-4">
-                {orderItems.map((item) => (
-                  <CartItem key={item._id} cartItem={item}/>
-                ))}
-              </div>
+              {orderItems.length > 0 ? (
+                <div className="space-y-4">
+                  {orderItems.map((item) => (
+                    <CartItem key={item._id} cartItem={item}/>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No items in this order.</p>
+              )}
             </div>
           </div>
 
