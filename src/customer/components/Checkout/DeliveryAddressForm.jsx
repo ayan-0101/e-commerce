@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, TextField, Typography } from "@mui/material";
 import AddressCard from "../AddressCard/AddressCard";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,13 +8,13 @@ import { toast, Toaster } from "react-hot-toast";
 
 const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    streetAddress: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    mobile: '',
+    firstName: "",
+    lastName: "",
+    streetAddress: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    mobile: "",
   });
 
   const dispatch = useDispatch();
@@ -35,11 +35,19 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
     e.preventDefault();
 
     // Validate all fields are filled
-    const requiredFields = ['firstName', 'lastName', 'streetAddress', 'city', 'state', 'zipCode', 'mobile'];
-    const emptyFields = requiredFields.filter(field => !formData[field]);
-    
+    const requiredFields = [
+      "firstName",
+      "lastName",
+      "streetAddress",
+      "city",
+      "state",
+      "zipCode",
+      "mobile",
+    ];
+    const emptyFields = requiredFields.filter((field) => !formData[field]);
+
     if (emptyFields.length > 0) {
-      toast.error(`Please fill in: ${emptyFields.join(', ')}`, {
+      toast.error(`Please fill in: ${emptyFields.join(", ")}`, {
         position: "top-center",
       });
       return;
@@ -64,41 +72,64 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
     };
 
     try {
-      const resultAction = await dispatch(createOrder({ address: addressData, navigate }));
-      
-      // Extract order ID from the action result
-      // The structure might vary based on your Redux action implementation
-      let orderId = null;
-      
-      if (resultAction && resultAction.payload) {
-        orderId = resultAction.payload._id || resultAction.payload.orderId || resultAction.payload.id;
+      const resultAction = await dispatch(
+        createOrder({ address: addressData, navigate })
+      );
+
+      // Check if the action was successful
+      if (!resultAction.success) {
+        toast.error(
+          resultAction.error || "Failed to create order. Please try again.",
+          {
+            position: "top-center",
+          }
+        );
+        return;
       }
-      
-      toast.success("Order created successfully!", {
-        position: "top-center",
-      });
-      
-      // Move to next step after successful order creation
-      setTimeout(() => {
-        if (onOrderCreated && orderId) {
-          onOrderCreated(orderId);
-        } else if (handleNext) {
+
+      // Extract order ID from the result
+      const orderId =
+        resultAction.orderId ||
+        resultAction.payload?._id ||
+        resultAction.payload?.id;
+
+      console.log("🆔 Extracted Order ID:", orderId);
+
+      if (orderId) {
+        toast.success("Order created successfully!", {
+          position: "top-center",
+        });
+
+        setTimeout(() => {
+          if (onOrderCreated) {
+            onOrderCreated(orderId);
+          } else {
+            handleNext();
+          }
+        }, 1000);
+      } else {
+        toast.success("Order created! Loading details...", {
+          position: "top-center",
+        });
+        setTimeout(() => {
           handleNext();
-        }
-      }, 1000); // Small delay to show success message
+        }, 1000);
+      }
     } catch (error) {
-      toast.error("Failed to create order. Please try again.", {
-        position: "top-center",
-      });
-      console.error("Order creation error:", error);
+      toast.error(
+        error.message || "Failed to create order. Please try again.",
+        {
+          position: "top-center",
+        }
+      );
     }
   };
 
   // Handle saved address delivery
   const handleSavedAddressDeliver = async () => {
-    // Get saved address from Redux state (already accessed at component level)
-    const savedAddress = auth?.user?.addresses?.[0]; // Adjust based on your structure
-    
+    // Get saved address from Redux state
+    const savedAddress = auth?.user?.addresses?.[0] || auth?.user?.address;
+
     if (!savedAddress) {
       toast.error("No saved address found. Please add a new address.", {
         position: "top-center",
@@ -107,27 +138,53 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
     }
 
     try {
-      const resultAction = await dispatch(createOrder({ address: savedAddress, navigate }));
-      
-      let orderId = null;
-      if (resultAction && resultAction.payload) {
-        orderId = resultAction.payload._id || resultAction.payload.orderId || resultAction.payload.id;
+      const resultAction = await dispatch(
+        createOrder({ address: savedAddress, navigate })
+      );
+
+      if (!resultAction.success) {
+        toast.error(
+          resultAction.error || "Failed to create order. Please try again.",
+          {
+            position: "top-center",
+          }
+        );
+        return;
       }
-      
-      toast.success("Using saved address!");
-      
-      setTimeout(() => {
-        if (onOrderCreated && orderId) {
-          onOrderCreated(orderId);
-        } else if (handleNext) {
+
+      // Extract order ID
+      const orderId =
+        resultAction.orderId ||
+        resultAction.payload?._id ||
+        resultAction.payload?.id;
+
+      if (orderId) {
+        toast.success("Order created with saved address!", {
+          position: "top-center",
+        });
+
+        setTimeout(() => {
+          if (onOrderCreated) {
+            onOrderCreated(orderId);
+          } else {
+            handleNext();
+          }
+        }, 1000);
+      } else {
+        toast.success("Order created! Loading details...", {
+          position: "top-center",
+        });
+        setTimeout(() => {
           handleNext();
-        }
-      }, 1000);
+        }, 1000);
+      }
     } catch (error) {
-      toast.error("Failed to create order. Please try again.", {
-        position: "top-center",
-      });
-      console.error("Order creation error:", error);
+      toast.error(
+        error.message || "Failed to create order. Please try again.",
+        {
+          position: "top-center",
+        }
+      );
     }
   };
 
@@ -170,7 +227,7 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
             <Typography variant="h6" className="mb-6 text-gray-800">
               Add New Delivery Address
             </Typography>
-            
+
             <form className="flex flex-col space-y-6" onSubmit={handleSubmit}>
               {/* First Name & Last Name */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -181,7 +238,6 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
                   fullWidth
                   value={formData.firstName}
                   onChange={handleChange}
-                  error={!formData.firstName && formData.firstName !== ''}
                 />
                 <TextField
                   required
@@ -190,7 +246,6 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
                   fullWidth
                   value={formData.lastName}
                   onChange={handleChange}
-                  error={!formData.lastName && formData.lastName !== ''}
                 />
               </div>
 
@@ -204,7 +259,6 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
                 rows={3}
                 value={formData.streetAddress}
                 onChange={handleChange}
-                error={!formData.streetAddress && formData.streetAddress !== ''}
                 helperText="House number, building name, street name"
               />
 
@@ -217,7 +271,6 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
                   fullWidth
                   value={formData.city}
                   onChange={handleChange}
-                  error={!formData.city && formData.city !== ''}
                 />
                 <TextField
                   required
@@ -226,7 +279,6 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
                   fullWidth
                   value={formData.state}
                   onChange={handleChange}
-                  error={!formData.state && formData.state !== ''}
                 />
               </div>
 
@@ -239,7 +291,6 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
                   fullWidth
                   value={formData.zipCode}
                   onChange={handleChange}
-                  error={!formData.zipCode && formData.zipCode !== ''}
                 />
                 <TextField
                   required
@@ -249,11 +300,10 @@ const DeliveryAddressForm = ({ handleNext, onOrderCreated }) => {
                   type="tel"
                   value={formData.mobile}
                   onChange={handleChange}
-                  error={!formData.mobile && formData.mobile !== ''}
                   helperText="10 digit mobile number"
-                  inputProps={{ 
+                  inputProps={{
                     pattern: "[0-9]*",
-                    maxLength: 10 
+                    maxLength: 10,
                   }}
                 />
               </div>

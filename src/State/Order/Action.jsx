@@ -26,20 +26,23 @@ export const createOrder = (reqData) => async (dispatch) => {
   try {
     const { data } = await api.post(`api/orders`, reqData.address);
 
-    if (data?.data?.id || data?.data?._id) {
-      const orderId = data.data.id || data.data._id;
-      reqData.navigate(`/checkout?step=3&order_id=${orderId}`);
-    } else if (data?.id || data?._id) {
-      const orderId = data.id || data._id;
-      reqData.navigate(`/checkout?step=3&order_id=${orderId}`);
-    }
+    // Extract order data - backend returns { success, message, data: orderObject }
+    const orderData = data.data || data;
+    
+    // Extract order ID
+    const orderId = orderData._id || orderData.id;
 
     dispatch({
       type: CREATE_ORDER_SUCCESS,
-      payload: data.data || data,
+      payload: orderData,
     });
 
-    return data;
+    // Return the order data with success flag so component can handle navigation
+    return {
+      success: true,
+      payload: orderData,
+      orderId: orderId
+    };
   } catch (error) {
     const errorMessage =
       error.response?.data?.message ||
@@ -51,7 +54,11 @@ export const createOrder = (reqData) => async (dispatch) => {
       payload: errorMessage,
     });
 
-    throw error;
+    // Return error info
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 };
 
@@ -67,12 +74,17 @@ export const getOrderById = (reqData) => async (dispatch) => {
 
     const { data } = await api.get(`api/orders/${orderId}`);
 
+    const orderData = data.data || data;
+
     dispatch({
       type: GET_ORDER_BY_ID_SUCCESS,
-      payload: data.data || data,
+      payload: orderData,
     });
 
-    return data;
+    return {
+      success: true,
+      payload: orderData
+    };
   } catch (error) {
     const errorMessage =
       error.response?.data?.message || error.message || "Failed to fetch order";
@@ -82,7 +94,10 @@ export const getOrderById = (reqData) => async (dispatch) => {
       payload: errorMessage,
     });
 
-    throw error;
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 };
 
@@ -97,14 +112,23 @@ export const getOrderHistory = () => async (dispatch) => {
       type: GET_ORDER_HISTORY_SUCCESS,
       payload,
     });
-    return data;
+    
+    return {
+      success: true,
+      payload: payload
+    };
   } catch (error) {
-    const payload = error?.response?.data ?? error?.message ?? String(error);
+    const errorMessage = error?.response?.data?.message ?? error?.message ?? String(error);
+    
     dispatch({
       type: GET_ORDER_HISTORY_FAILURE,
-      payload,
+      payload: errorMessage,
     });
-    throw error;
+    
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 };
 
@@ -112,9 +136,7 @@ export const getAllOrders = () => async (dispatch) => {
   dispatch({ type: GET_ALL_ORDERS_REQUEST });
 
   try {
-    const { data } = await api.get("/api/admin/orders"); // 👈 check route: likely plural
-
-    // backend shape: { success, message, data: orders[] }
+    const { data } = await api.get("/api/admin/orders");
     const payload = data?.data ?? data;
 
     dispatch({
@@ -122,14 +144,22 @@ export const getAllOrders = () => async (dispatch) => {
       payload,
     });
 
-    return data;
+    return {
+      success: true,
+      payload: payload
+    };
   } catch (error) {
-    const payload = error?.response?.data ?? error?.message ?? String(error);
+    const errorMessage = error?.response?.data?.message ?? error?.message ?? String(error);
+    
     dispatch({
       type: GET_ALL_ORDERS_FAILURE,
-      payload,
+      payload: errorMessage,
     });
-    throw error;
+    
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 };
 
@@ -147,7 +177,10 @@ export const updateOrderStatus = (orderId, status) => async (dispatch) => {
       payload: data.data || data,
     });
 
-    return data;
+    return {
+      success: true,
+      payload: data.data || data
+    };
   } catch (error) {
     const errorMessage =
       error.response?.data?.message ||
@@ -159,14 +192,13 @@ export const updateOrderStatus = (orderId, status) => async (dispatch) => {
       payload: errorMessage,
     });
 
-    throw error;
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 };
 
-/**
- * Delete order (Admin)
- * @param {String} orderId 
- */
 export const deleteOrder = (orderId) => async (dispatch) => {
   dispatch({ type: DELETE_ORDER_REQUEST });
 
@@ -175,10 +207,13 @@ export const deleteOrder = (orderId) => async (dispatch) => {
 
     dispatch({
       type: DELETE_ORDER_SUCCESS,
-      payload: orderId, // Return the deleted order ID
+      payload: orderId,
     });
 
-    return data;
+    return {
+      success: true,
+      payload: data
+    };
   } catch (error) {
     const errorMessage =
       error.response?.data?.message ||
@@ -190,6 +225,9 @@ export const deleteOrder = (orderId) => async (dispatch) => {
       payload: errorMessage,
     });
 
-    throw error;
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 };
