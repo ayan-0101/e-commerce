@@ -15,6 +15,7 @@ import {
 import OrderCard from "./OrderCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrderHistory } from "../../../State/Order/Action";
+import { get } from "lodash";
 
 const Order = () => {
   const [selectedFilters, setSelectedFilters] = useState([]);
@@ -77,8 +78,8 @@ const Order = () => {
       </CardContent>
     </Card>
   );
-
-  const filteredOrders = orders.orders.filter((o) => {
+  const _orders = get(orders, 'orders', []);
+  const filteredOrders = _orders.filter((o) => {
     if (selectedFilters.length === 0) return true;
     const status = (o.orderStatus || o.status || "").toString().toLowerCase();
     return selectedFilters.some((f) => status.includes(f));

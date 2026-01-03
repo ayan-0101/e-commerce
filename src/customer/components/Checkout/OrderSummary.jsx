@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AddressCard from "../AddressCard/AddressCard";
 import CartItem from "../Cart/CartItem";
 import { useDispatch, useSelector } from "react-redux";
-import { getOrderById } from "../../../State/Order/Action";
+import { getOrderById, getOrderHistory } from "../../../State/Order/Action";
 import { get } from "lodash";
 import { Tag, Truck } from "lucide-react";
 
@@ -11,12 +11,13 @@ const formatPrice = (amount) =>
     ? "₹0"
     : `₹${Number(amount).toLocaleString()}`;
 
-const OrderSummary = () => {
+const OrderSummary = ({ orderId: propsOrderId }) => {
   const dispatch = useDispatch();
   const { order } = useSelector((state) => state);
+  const [fetchingLatestOrder, setFetchingLatestOrder] = useState(false);
 
   const orderData = get(order, "order", {});
-  const orderId = get(orderData, "_id", "");
+  const orderId = propsOrderId || get(orderData, "_id", "");
   const orderItems = get(orderData, "orderItems", []);
   const shippingAddress = get(orderData, "shippingAddress", {});
   const paymentDetails = get(orderData, "paymentDetails", {});
@@ -37,10 +38,62 @@ const OrderSummary = () => {
   );
 
   useEffect(() => {
-    if (orderId) {
-      dispatch(getOrderById({ orderId }));
-    }
-  }, [dispatch, orderId]);
+    const fetchOrder = async () => {
+      if (propsOrderId) {
+        // If orderId was provided as prop, fetch that specific order
+
+        await dispatch(getOrderById(propsOrderId));
+      } else if (!fetchingLatestOrder) {
+        // If no orderId provided, fetch user's latest order
+        setFetchingLatestOrder(true);
+        
+        try {
+          const result = await dispatch(getOrderHistory());
+          
+          
+          // Get the latest (first) order from the response
+          // Backend returns: { content: [...orders], currentPage, totalPages, totalElements }
+          const orders = result?.payload?.content || result?.payload?.orders || [];
+          const latestOrderId = orders[0]?._id || orders[0]?.id;
+          
+          if (latestOrderId) {
+            await dispatch(getOrderById(latestOrderId));
+          } else {
+          }
+        } catch (error) {
+          console.error("Error fetching latest order:", error);
+        }
+      }
+    };
+
+    fetchOrder();
+  }, [dispatch, propsOrderId, fetchingLatestOrder]);
+
+  // Show loading state
+  if (!orderId && (order?.loading || fetchingLatestOrder)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading order details...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!orderId && !order?.loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <p className="text-gray-600">No order found. Please create an order first.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-8">
@@ -81,11 +134,15 @@ const OrderSummary = () => {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Ordered Items
               </h2>
-              <div className="space-y-4">
-                {orderItems.map((item) => (
-                  <CartItem key={item._id} cartItem={item}/>
-                ))}
-              </div>
+              {orderItems.length > 0 ? (
+                <div className="space-y-4">
+                  {orderItems.map((item) => (
+                    <CartItem key={item._id} cartItem={item}/>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No items in this order.</p>
+              )}
             </div>
           </div>
 

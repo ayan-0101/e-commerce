@@ -15,11 +15,12 @@ export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Get step from query param (default = 0)
+  // Get step from query param (default = 1)
   const querySearch = new URLSearchParams(location.search);
-  const stepFromQuery = parseInt(querySearch.get('step')) || 2;
+  const stepFromQuery = parseInt(querySearch.get('step')) || 1;
 
   const [activeStep, setActiveStep] = React.useState(stepFromQuery);
+  const [createdOrderId, setCreatedOrderId] = React.useState(null);
 
   // Keep URL in sync when activeStep changes
   React.useEffect(() => {
@@ -36,10 +37,17 @@ export default function Checkout() {
 
   const handleReset = () => {
     setActiveStep(1);
+    setCreatedOrderId(null);
+  };
+
+  // Handler to receive order ID from DeliveryAddressForm
+  const handleOrderCreated = (orderId) => {
+    setCreatedOrderId(orderId);
+    handleNext();
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', padding: 2 }}>
       <Stepper activeStep={activeStep}>
         {steps.map((label) => (
           <Step key={label}>
@@ -70,11 +78,15 @@ export default function Checkout() {
               Back
             </Button>
           </Box>
-          {
-            <div>
-                {stepFromQuery === 2 ? <DeliveryAddressForm/> : <OrderSummary/> }
-            </div>
-          }
+          <div>
+            {activeStep === 1 && (
+              <DeliveryAddressForm 
+                handleNext={handleNext}
+                onOrderCreated={handleOrderCreated}
+              />
+            )}
+            {activeStep === 2 && <OrderSummary orderId={createdOrderId} />}
+          </div>
         </React.Fragment>
       )}
     </Box>
